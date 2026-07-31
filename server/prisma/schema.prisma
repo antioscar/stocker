@@ -1,0 +1,115 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Usuario {
+  id            Int     @id @default(autoincrement())
+  nombre        String
+  email         String   @unique
+  passwordHash  String
+  rol           String   // "ADMIN" o "CAJERO"
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  ventas Venta[]
+  movimientos MovimientoStock[]
+}
+
+model Categoria {
+  id       Int        @id @default(autoincrement())
+  nombre   String
+  productos Producto[]
+}
+
+model Producto {
+  id            Int      @id @default(autoincrement())
+  nombre        String
+  codigoBarras  String?
+  categoriaId   Int
+  precioVenta   Float
+  precioCosto   Float
+  stock         Int      @default(0)
+  stockMinimo   Int      @default(0)
+  unidad        String   // "unidad", "kg", "lb", etc.
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  categoria Categoria @relation(fields: [categoriaId], references: [id])
+  ventaDetalles VentaDetalle[]
+  movimientos  MovimientoStock[]
+
+  @@index([categoriaId])
+}
+
+model Cliente {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  telefono  String?
+  email     String?
+  direccion String?
+  createdAt DateTime  @default(now())
+
+  ventas Venta[]
+}
+
+model Venta {
+  id           Int       @id @default(autoincrement())
+  folio        String    // "BOL-####" (ejemplo: BOL-0001)
+  clienteId    Int?
+  usuarioId    Int
+  subtotal     Float
+  descuento    Float   @default(0)
+  total        Float
+  metodoPago   String    // "efectivo", "tarjeta", "transferencia"
+  anulada      Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+
+  cliente Cliente? @relation(fields: [clienteId], references: [id])
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  ventaDetalle VentaDetalle[]
+
+  @@index([folio])
+  @@index([usuarioId])
+  @@index([clienteId])
+}
+
+model VentaDetalle {
+  id        Int     @id @default(autoincrement())
+  ventaId   Int
+  productoId Int
+  cantidad  Int
+  precioUnitario Float
+  subtotal  Float
+
+  venta Venta @relation(fields: [ventaId], references: [id])
+  producto Producto @relation(fields: [productoId], references: [id])
+
+  @@index([ventaId])
+  @@index([productoId])
+}
+
+model MovimientoStock {
+  id          Int       @id @default(autoincrement())
+  productoId  Int
+  tipo        String    // "ENTRADA", "SALIDA", "AJUSTE"
+  cantidad     Int
+  motivo      String?   // "venta", "anulación", "ajuste"
+  usuarioId   Int?
+  createdAt   DateTime  @default(now())
+
+  producto Producto @relation(fields: [productoId], references: [id])
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
+
+  @@index([productoId])
+  @@index([usuarioId])
+}
+
+model Configuracion {
+  key     String  @id
+  value   Json    // nombre, dirección, logo, folioCorrelativo, etc.
+}

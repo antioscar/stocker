@@ -1,0 +1,9 @@
+# Entorno local (nunca subir secretos)
+.env
+.env.local
+.env.*.local
+
+# Prisma: BD SQLite local
+dev.db
+prisma/dev.db
+*.sqlite

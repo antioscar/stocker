@@ -1,0 +1,47 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "API backend para StockCaja (ventas, inventario, clientes, etc.)",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "seed": "node prisma/seed.js",
+    "test": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "helmet": "^8.1.0",
+    "winston": "^3.14.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "@prisma/client": "^6.8.0",
+    "prisma": "^6.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.3",
+    "@types/express": "^4.17.21",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8",
+    "@types/jsonwebtoken": "^9.0.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.4.2"
+  },
+  "allowScripts": {
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "esbuild@0.28.1": true,
+    "esbuild@0.21.5": true,
+    "prisma@6.19.3": true
+  }
+}
