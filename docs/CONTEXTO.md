@@ -99,7 +99,7 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
 | 6 | Frontend: punto de venta (POS) | ✅ Completado (POS funcional; pendiente decisión IVA) |
 | 7 | Frontend: módulos de administración (productos, categorías, clientes, usuarios, inventario) | ✅ Completado (Productos, Clientes, Usuarios) |
 | 8 | Frontend: reportes + configuración | ✅ Completado |
-| 9 | Calidad: tests API (Vitest + Supertest), ESLint, validaciones | Pendiente |
+| 9 | Calidad: tests API (Vitest + Supertest), ESLint, validaciones | ⏳ Pendiente (existe `eslint.config.js` en server; sin tests aún) |
 | 10 | Empaquetado on-premise + README (manual instalación) + material portafolio | Pendiente |
 
 ## 7. Roadmap futuro (NO implementar aún)
@@ -140,4 +140,5 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
 - `services/api.ts` (helper fetch con token). `hooks/useAuth.ts` renombrado a `.tsx` (usa JSX) y `login()` ahora carga el usuario completo desde `/auth/me`. Deps muertas eliminadas del `web/package.json` (redux, axios, react-redux). `web/README.md` reescrito.
 - Backend: agregado filtro `clienteId` en `GET /ventas` (historial de clientes).
 - **Pendiente menor:** el POS muestra IVA 19% en el carrito, pero el backend guarda los totales sin IVA (venta simple). Decisión de negocio pendiente: incluir IVA en el backend o mostrar precios finales sin IVA en el POS.
-- **Próximo paso:** Fase E — `git init` + push a `antioscar/stocker`.
+- **Fase E completada:** `.gitignore` raíz creado, `server/.gitignore` simplificado (no ignora `package-lock.json`), `git init -b main`, commit y `push -u origin main` a `antioscar/stocker`. Verificado en el árbol remoto: NO hay `.env`, `dev.db` ni `node_modules` (solo `.env.example`). Se eliminaron `CHECKLIST.md` (info falsa) y `server/tests/test.api.spec.js` (roto, referenciaba `../server`).
+- **Estado: plan completo (A–E). Próximo roadmap:** decisión IVA en POS, Fase 9 (tests + ESLint) y empaquetado on-premise.

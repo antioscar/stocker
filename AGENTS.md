@@ -13,7 +13,7 @@
 
 ## Estado actual
 
-- **Fases A, B, C y D del plan completadas.** Falta solo E (git init + push).
+- **Fases A, B, C, D y E del plan completadas.** Proyecto funcional end-to-end y subido a GitHub.
 - **Backend `server/` FUNCIONA ✅** — `npm run dev` levanta en `:3000`, `npm run build` (tsc) sin errores.
   - Unificado en **CommonJS** (se quitó `"type": "module"` de `server/package.json`).
   - Prisma bajado a **v6** (`@prisma/client` + `prisma` ^6.19.3): el schema usaba formato v5/v6 y Prisma 7 rompía (`file:` y `@prisma/client`).
@@ -35,8 +35,8 @@
   - ✅ Limpiado `web/package.json` (se quitaron deps muertas: redux, axios, react-redux). Corregidos imports sin usar (Cart, POS, Login).
   - ✅ `web/README.md` reescrito (estaba con `\n` literales).
   - ⚠️ Pendiente menor: el POS muestra IVA 19% en el carrito pero el backend guarda sin IVA (decisión de negocio pendiente, ver CONTEXTO).
-- **Git/GitHub:** repo local NO inicializado aún. Repo remoto `antioscar/stocker` **creado, privado y vacío** (rama `main`). `gh` autenticado como `antioscar`. `.gitignore` raíz creado. `server/.env` tiene `JWT_SECRET` → **NO subir** (cubierto por `.gitignore` raíz y `server/.gitignore`).
-- **Plan:** A ✅ B ✅ C ✅ D ✅ E) pendiente: actualizar contexto (checkpoint), `git init` + push a `antioscar/stocker`.
+- **Git/GitHub:** ✅ **Repo subido a `https://github.com/antioscar/stocker`** (rama `main`). `.gitignore` raíz creado; `server/.env` con `JWT_SECRET` NO subido (verificado en el árbol remoto; solo `.env.example`).
+- **Plan:** A ✅ B ✅ C ✅ D ✅ **E ✅ (completo)** — contexto actualizado, `git init` + `push` a `antioscar/stocker` realizado. Proyecto funcional end-to-end.
 
 ## Componentes Frontend Completados
 
