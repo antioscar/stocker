@@ -2,7 +2,7 @@
 import { LoginRequest, LoginResponse, AuthMeResponse } from '../types/api';
 
 class AuthService {
-  private baseURL = 'http://localhost:3000/api';
+  private baseURL = '/api';
 
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await fetch(`${this.baseURL}/auth/login`, {

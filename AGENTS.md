@@ -23,6 +23,7 @@
   - Eliminados duplicados huérfanos: `server.ts`, `server.js`, `middleware/auth.ts`, `routes/productos.ts`, `prisma.config.ts`.
   - `ventas.js`: se agregó generación de **folio correlativo** `BOL-####` en transacción (faltaba). Filtro por `clienteId` en `GET /ventas`.
   - `tsconfig.json`: `moduleResolution: bundler` + `allowJs: true`; `process.env['PORT']` en `index.ts`.
+  - **CORS Habilitado:** Se incorporó el middleware `cors()` en el backend para permitir peticiones del cliente React.
   - **Seed** `server/prisma/seed.js` (script `npm run seed`): crea admin `admin@stockcaja.cl` / `admin123` y config del negocio.
   - BD SQLite creada en `server/prisma/dev.db` con migraciones `init` y `add_relations`.
   - Probado end-to-end: login, CRUDs, venta transaccional con folio y descuento de stock, anulación con devolución de stock. Todo OK.
@@ -31,12 +32,11 @@
   - ✅ Reescribidas desde cero las 5 páginas corruptas: `Clientes.tsx` (CRUD + historial de ventas), `Productos.tsx` (CRUD + categorías + búsqueda), `Usuarios.tsx` (CRUD + roles, solo ADMIN), `Reportes.tsx` (KPIs + ventas por día + más vendidos + stock bajo), `Configuracion.tsx` (negocio + folio, solo ADMIN).
   - ✅ Creado `Dashboard.tsx` (resumen del día + accesos rápidos).
   - ✅ `routes.tsx` con rutas reales a todas las páginas. `Layout.tsx` reescrito con `Outlet`, `NavLink`, logout real y control por rol.
-  - ✅ `services/api.ts` (helper fetch con token). Corregido import de tipos en `services/auth.ts` y `hooks/useAuth.tsx` (renombrado de `.ts` a `.tsx` porque usa JSX; ahora `login()` carga el usuario completo desde `/auth/me`).
-  - ✅ Limpiado `web/package.json` (se quitaron deps muertas: redux, axios, react-redux). Corregidos imports sin usar (Cart, POS, Login).
-  - ✅ `web/README.md` reescrito (estaba con `\n` literales).
-  - ⚠️ Pendiente menor: el POS muestra IVA 19% en el carrito pero el backend guarda sin IVA (decisión de negocio pendiente, ver CONTEXTO).
+  - ✅ **Arreglo de Autenticación y Redirección:** Se corrigió el redireccionamiento después de iniciar sesión en `Login.tsx` y se normalizó el helper `apiFetch` y el `authService` para apuntar a la ruta relativa `/api` manejada por el proxy de Vite en lugar de URLs absolutas localhost fijas.
+  - ✅ **Análisis de Mercado Chileno:** Creado [analisis_mercado_plan.md](file:///c:/Users/oscar/Desktop/Proyectos/sinnombre1/docs/analisis_mercado_plan.md) comparando competidores chilenos (Bsale, Loyverse, Tivendo) y detallando necesidades clave.
 - **Git/GitHub:** ✅ **Repo subido a `https://github.com/antioscar/stocker`** (rama `main`). `.gitignore` raíz creado; `server/.env` con `JWT_SECRET` NO subido (verificado en el árbol remoto; solo `.env.example`).
 - **Plan:** A ✅ B ✅ C ✅ D ✅ **E ✅ (completo)** — contexto actualizado, `git init` + `push` a `antioscar/stocker` realizado. Proyecto funcional end-to-end.
+
 
 ## Componentes Frontend Completados
 
@@ -125,12 +125,13 @@ sinnombre1/
 3. **Stock nunca negativo**: una venta descuenta stock y crea `MovimientoStock` (auditoría completa de inventario).
 4. **Permisos**: solo `ADMIN` gestiona usuarios, configuración, anular ventas y ajustes de stock. `CAJERO` vende y ve inventario.
 5. **Facturación v1**: venta simple con folio interno. **NO se integra SII por ahora.**
+6. **Estrategia UI/UX Diferencial:** Rediseñar la UI hacia una estética premium (modo oscuro, sombras, micro-animaciones) para sobresalir frente a competidores chilenos de aspecto obsoleto, priorizando rapidez mediante atajos de teclado y escaneo en segundo plano en el POS.
 
 ## Roadmap futuro (contexto; NO implementar aún)
 
-- **v2: Boleta/factura electrónica SII** (LibreDTE o Mifactura, certificado digital, timbre) — guardado como prioridad.
-- **v2: SaaS multi-tenant** (PostgreSQL + hosting + login por negocio).
-- Impresión térmica (ESC/POS), reportes avanzados, multi-sucursal.
+- **Fase 1 (Corto Plazo) - Operación Diaria Express:** Escaneo de código de barras en segundo plano sin modales, control y arqueo de caja (apertura/cierres de turnos), layout de ticket térmico ESC/POS (58mm/80mm), y reporte de utilidad bruta (Precio Venta - Precio Costo).
+- **Fase 2 (Mediano Plazo) - Localización Chile:** Desglose del IVA (19%) en el backend y base de datos, boleta/factura electrónica SII integrada (LibreDTE o Mifactura, certificado digital, timbre).
+- **Fase 3 (Largo Plazo) - Modernización:** Interfaz premium, atajos de teclado globales en POS, integración directa con terminales SumUp/Redelcom y migración SaaS multi-tenant (PostgreSQL).
 
 ## Convenciones
 

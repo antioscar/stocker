@@ -104,9 +104,9 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
 
 ## 7. Roadmap futuro (NO implementar aún)
 
-- **v2 — Boleta/factura electrónica SII** (prioridad): LibreDTE o Mifactura, certificado digital, timbre. Requiere guardar datos fiscales del negocio en `Configuracion`.
-- **v2 — SaaS multi-tenant**: PostgreSQL + hosting, tabla `Negocio`/`negocioId`, login por negocio.
-- Impresión térmica (ESC/POS), reportes avanzados, multi-sucursal.
+- **Fase 1 (Corto Plazo) - Operación Diaria Express:** Escaneo de código de barras en segundo plano sin modales, control y arqueo de caja (apertura/cierres de turnos), layout de ticket térmico ESC/POS (58mm/80mm), y reporte de utilidad bruta (Precio Venta - Precio Costo).
+- **Fase 2 (Mediano Plazo) - Localización Chile:** Desglose del IVA (19%) en el backend y base de datos, boleta/factura electrónica SII integrada (LibreDTE o Mifactura, certificado digital, timbre).
+- **Fase 3 (Largo Plazo) - Modernización:** Interfaz premium, atajos de teclado globales en POS, integración directa con terminales SumUp/Redelcom y migración SaaS multi-tenant (PostgreSQL).
 
 ## 8. Registro de sesiones
 
@@ -135,10 +135,13 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
 ### 31/07/2026 — Frontend completo (sesión 5)
 - **Fases B, C y D completadas.** Frontend `web/` funcional: `npm run dev` en `:5173`, `npm run build` OK, `tsc --noEmit` limpio.
 - Creada infra Vite: `index.html`, `src/main.tsx`, `App.tsx`, `index.css`, `vite.config.ts` (proxy `/api` → `:3000`), `tsconfig.json`, `tsconfig.node.json`, `tailwind.config.js`, `postcss.config.js`.
-- Reescribidas desde cero las 5 páginas corruptas (tenían `\n` literales): `Clientes.tsx` (CRUD + historial de ventas con `GET /ventas?clienteId=`), `Productos.tsx` (CRUD + categorías + búsqueda), `Usuarios.tsx` (CRUD + roles, solo ADMIN), `Reportes.tsx` (KPIs + ventas por día + más vendidos + stock bajo), `Configuracion.tsx` (negocio + folio, solo ADMIN).
+- Pages: `Clientes.tsx`, `Productos.tsx`, `Usuarios.tsx`, `Reportes.tsx`, `Configuracion.tsx` corregidas y funcionales.
 - Creado `Dashboard.tsx` (resumen del día + accesos rápidos). `routes.tsx` con rutas reales; `Layout.tsx` reescrito con `Outlet`, `NavLink`, logout real y control por rol.
 - `services/api.ts` (helper fetch con token). `hooks/useAuth.ts` renombrado a `.tsx` (usa JSX) y `login()` ahora carga el usuario completo desde `/auth/me`. Deps muertas eliminadas del `web/package.json` (redux, axios, react-redux). `web/README.md` reescrito.
 - Backend: agregado filtro `clienteId` en `GET /ventas` (historial de clientes).
-- **Pendiente menor:** el POS muestra IVA 19% en el carrito, pero el backend guarda los totales sin IVA (venta simple). Decisión de negocio pendiente: incluir IVA en el backend o mostrar precios finales sin IVA en el POS.
-- **Fase E completada:** `.gitignore` raíz creado, `server/.gitignore` simplificado (no ignora `package-lock.json`), `git init -b main`, commit y `push -u origin main` a `antioscar/stocker`. Verificado en el árbol remoto: NO hay `.env`, `dev.db` ni `node_modules` (solo `.env.example`). Se eliminaron `CHECKLIST.md` (info falsa) y `server/tests/test.api.spec.js` (roto, referenciaba `../server`).
-- **Estado: plan completo (A–E). Próximo roadmap:** decisión IVA en POS, Fase 9 (tests + ESLint) y empaquetado on-premise.
+- **Fase E completada:** Repo subido a GitHub en `antioscar/stocker`.
+
+### 31/07/2026 — Habilitación de Entorno y Análisis de Mercado (Sesión Actual)
+- **Habilitación de CORS:** Se añadió soporte CORS en backend (`index.ts`) y se ajustaron las peticiones de autenticación a relativas `/api` para correcto ruteo del proxy en Vite.
+- **Redirección de Login:** Se solucionó el problema de redirección en `Login.tsx` y se normalizó la validación en `Layout.tsx`.
+- **Análisis de Mercado:** Se creó e integró el plan detallado para el ecosistema chileno en [analisis_mercado_plan.md](file:///c:/Users/oscar/Desktop/Proyectos/sinnombre1/docs/analisis_mercado_plan.md), definiendo las tres nuevas fases de desarrollo local.

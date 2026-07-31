@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const navItems = [
@@ -27,8 +27,7 @@ export const Layout = () => {
   }
 
   if (!user) {
-    navigate('/login', { replace: true });
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const esAdmin = user.rol === 'ADMIN';

@@ -1,7 +1,7 @@
 // Helper de cliente HTTP con token JWT para el frontend
 import { authService } from './auth';
 
-const BASE_URL = 'http://localhost:3000/api';
+const BASE_URL = '/api';
 
 interface ApiError {
   error?: string;
