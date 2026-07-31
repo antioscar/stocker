@@ -141,7 +141,8 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
 - Backend: agregado filtro `clienteId` en `GET /ventas` (historial de clientes).
 - **Fase E completada:** Repo subido a GitHub en `antioscar/stocker`.
 
-### 31/07/2026 — Habilitación de Entorno y Análisis de Mercado (Sesión Actual)
-- **Habilitación de CORS:** Se añadió soporte CORS en backend (`index.ts`) y se ajustaron las peticiones de autenticación a relativas `/api` para correcto ruteo del proxy en Vite.
-- **Redirección de Login:** Se solucionó el problema de redirección en `Login.tsx` y se normalizó la validación en `Layout.tsx`.
-- **Análisis de Mercado:** Se creó e integró el plan detallado para el ecosistema chileno en [analisis_mercado_plan.md](file:///c:/Users/oscar/Desktop/Proyectos/sinnombre1/docs/analisis_mercado_plan.md), definiendo las tres nuevas fases de desarrollo local.
+### 31/07/2026 — Habilitación de Entorno, Análisis de Mercado y Fase 1 (Sesión Actual)
+- **Habilitación de CORS y Login:** Corregido CORS en el servidor y redirección al autenticarse en el frontend.
+- **Análisis de Mercado:** Planificado el roadmap chileno en `docs/analisis_mercado_plan.md`.
+- **Fase 1 Completada:** Modelado e implementación de Turnos de Caja (Apertura/Cierre/Movimientos manuales), persistencia del buscador del POS con lectura continua de códigos de barras, corrección tributaria del IVA chileno y reportes de Utilidad Bruta.
+- **Teclado Rápido POS:** Implementado control total del Punto de Venta mediante atajos de teclado globales (F1-F4, F8-F9, F12) y panel de referencia para el cajero.

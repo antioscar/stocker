@@ -70,6 +70,70 @@ export const POS = () => {
     }
   }, [cajaAbierta, cajaModalMode]);
 
+  // Keyboard Shortcuts Hook
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // F1: Focus Search Bar
+      if (e.key === 'F1') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      }
+
+      // F2: Cycle Payment Method
+      if (e.key === 'F2') {
+        e.preventDefault();
+        const methods = ['efectivo', 'tarjeta', 'transferencia'];
+        const currentIndex = methods.indexOf(metodoPago);
+        const nextIndex = (currentIndex + 1) % methods.length;
+        setMetodoPago(methods[nextIndex]);
+      }
+
+      // F3: Focus Client Input
+      if (e.key === 'F3') {
+        e.preventDefault();
+        const clientInput = document.getElementById('client-input') as HTMLInputElement;
+        clientInput?.focus();
+        clientInput?.select();
+      }
+
+      // F4: Focus Discount Input
+      if (e.key === 'F4') {
+        e.preventDefault();
+        const discountInput = document.getElementById('discount-input') as HTMLInputElement;
+        discountInput?.focus();
+        discountInput?.select();
+      }
+
+      // F8: Empty Cart
+      if (e.key === 'F8') {
+        e.preventDefault();
+        if (confirm('¿Vaciar carrito de compras?')) {
+          handleClearCart();
+        }
+      }
+
+      // F9: Print Last Ticket
+      if (e.key === 'F9') {
+        if (lastSale) {
+          e.preventDefault();
+          window.print();
+        }
+      }
+
+      // F12 or Ctrl+Enter: Pay/Checkout
+      if (e.key === 'F12' || (e.ctrlKey && e.key === 'Enter')) {
+        e.preventDefault();
+        handleCheckout();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+    };
+  }, [cartItems, metodoPago, descuento, lastSale, clienteSeleccionado, cajaAbierta]);
+
   const handleProductSelect = (producto: Producto) => {
     if (producto.stock <= 0) {
       alert(`El producto ${producto.nombre} no tiene stock disponible`);
@@ -401,12 +465,31 @@ export const POS = () => {
 
         {/* Checkout Panel */}
         <div className="space-y-4 print:w-full print:max-w-md print:mx-auto">
+          {/* Keyboard Shortcuts Helper Bar */}
+          <div className="bg-gray-800 text-white rounded-lg p-4 text-xs font-mono space-y-1.5 print:hidden shadow-sm">
+            <h4 className="font-semibold text-gray-300 uppercase tracking-wider text-xxs mb-1">Teclado Rápido POS</h4>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F1]</kbd> Buscar Producto</div>
+              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F2]</kbd> Medio de Pago</div>
+              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F3]</kbd> Cliente</div>
+              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F4]</kbd> Descuento</div>
+              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F8]</kbd> Vaciar carro</div>
+              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F12]</kbd> Cobrar (Ctrl+Enter)</div>
+            </div>
+            {lastSale && (
+              <div className="pt-1.5 border-t border-gray-700 mt-1">
+                <kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F9]</kbd> Imprimir ticket
+              </div>
+            )}
+          </div>
+
           {/* Client Selection */}
           <div className="bg-white rounded-lg shadow-sm border p-6 print:hidden">
             <h3 className="text-base font-bold text-gray-900 mb-3">Cliente</h3>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Nombre del Cliente (Opcional)</label>
               <input
+                id="client-input"
                 type="text"
                 value={clienteSeleccionado}
                 onChange={(e) => setClienteSeleccionado(e.target.value)}
@@ -442,6 +525,7 @@ export const POS = () => {
             <h3 className="text-base font-bold text-gray-900 mb-3">Descuento</h3>
             <div className="flex gap-2 items-center">
               <input
+                id="discount-input"
                 type="number"
                 min="0"
                 max="100"
