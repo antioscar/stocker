@@ -18,6 +18,7 @@ model Usuario {
 
   ventas Venta[]
   movimientos MovimientoStock[]
+  cajaSessions CajaSession[]
 }
 
 model Categoria {
@@ -62,6 +63,7 @@ model Venta {
   folio        String    // "BOL-####" (ejemplo: BOL-0001)
   clienteId    Int?
   usuarioId    Int
+  cajaSessionId Int?
   subtotal     Float
   descuento    Float   @default(0)
   total        Float
@@ -71,11 +73,13 @@ model Venta {
 
   cliente Cliente? @relation(fields: [clienteId], references: [id])
   usuario Usuario @relation(fields: [usuarioId], references: [id])
+  cajaSession CajaSession? @relation(fields: [cajaSessionId], references: [id])
   ventaDetalle VentaDetalle[]
 
   @@index([folio])
   @@index([usuarioId])
   @@index([clienteId])
+  @@index([cajaSessionId])
 }
 
 model VentaDetalle {
@@ -112,4 +116,35 @@ model MovimientoStock {
 model Configuracion {
   key     String  @id
   value   Json    // nombre, dirección, logo, folioCorrelativo, etc.
+}
+
+model CajaSession {
+  id                    Int              @id @default(autoincrement())
+  usuarioId             Int
+  montoApertura         Float
+  montoCierre           Float?
+  estado                String           @default("ABIERTA") // "ABIERTA", "CERRADA"
+  aperturaAt            DateTime         @default(now())
+  cierreAt              DateTime?
+  observaciones         String?
+  diferencia            Float?
+
+  usuario               Usuario          @relation(fields: [usuarioId], references: [id])
+  ventas                Venta[]
+  movimientosCaja       MovimientoCaja[]
+
+  @@index([usuarioId])
+}
+
+model MovimientoCaja {
+  id            Int         @id @default(autoincrement())
+  cajaSessionId Int
+  tipo          String      // "INGRESO", "EGRESO"
+  monto         Float
+  motivo        String
+  createdAt     DateTime    @default(now())
+
+  cajaSession   CajaSession @relation(fields: [cajaSessionId], references: [id])
+
+  @@index([cajaSessionId])
 }

@@ -101,26 +101,37 @@ export const Reportes = () => {
         <div className="text-center py-16 text-gray-500">No hay datos disponibles</div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-sm text-gray-600">Ventas totales</p>
-              <p className="text-2xl font-bold text-gray-900">{data.resumen.totalVentas}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+              <p className="text-sm text-gray-600 font-semibold">Ventas totales</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{data.resumen.totalVentas}</p>
+              <p className="text-xs text-gray-500 mt-1">tickets registrados</p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-sm text-gray-600">Ingresos</p>
-              <p className="text-2xl font-bold text-green-600">
+            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+              <p className="text-sm text-gray-600 font-semibold">Ingresos</p>
+              <p className="text-2xl font-bold text-green-600 mt-1">
                 {formatCurrency(data.resumen.totalIngresos)}
               </p>
+              <p className="text-xs text-gray-500 mt-1">ventas válidas</p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-sm text-gray-600">Ticket promedio</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {formatCurrency(data.resumen.ticketPromedio)}
+            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+              <p className="text-sm text-gray-600 font-semibold">Costo Total</p>
+              <p className="text-2xl font-bold text-orange-600 mt-1">
+                {formatCurrency((data.resumen as any).totalCosto || 0)}
               </p>
+              <p className="text-xs text-gray-500 mt-1">costo de mercadería</p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-sm text-gray-600">Ventas anuladas</p>
-              <p className="text-2xl font-bold text-red-600">{data.resumen.totalAnuladas}</p>
+            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+              <p className="text-sm text-gray-600 font-semibold">Utilidad Bruta</p>
+              <p className="text-2xl font-bold text-blue-600 mt-1">
+                {formatCurrency((data.resumen as any).utilidadBruta || 0)}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">ganancia neta estimada</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+              <p className="text-sm text-gray-600 font-semibold">Ventas anuladas</p>
+              <p className="text-2xl font-bold text-red-600 mt-1">{data.resumen.totalAnuladas}</p>
+              <p className="text-xs text-gray-500 mt-1">anulaciones de tickets</p>
             </div>
           </div>
 

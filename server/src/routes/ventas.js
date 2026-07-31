@@ -4,7 +4,20 @@ const prisma = require('../utils/db');
 // Create sale (transaccional)
 const create = async (req, res) => {
   try {
-    const { clienteId, usuarioId, items, metodoPago, descuento = 0 } = req.body;
+    const { clienteId, items, metodoPago, descuento = 0 } = req.body;
+    const activeUser = req.user.id;
+    
+    // Verificar si el usuario tiene una sesión de caja abierta
+    const cajaSession = await prisma.cajaSession.findFirst({
+      where: {
+        usuarioId: activeUser,
+        estado: 'ABIERTA',
+      },
+    });
+    
+    if (!cajaSession) {
+      return res.status(400).json({ error: 'Debe abrir caja antes de realizar una venta' });
+    }
     
     // Calcular totales
     let subtotal = 0;
@@ -36,7 +49,8 @@ const create = async (req, res) => {
         data: {
           folio,
           clienteId,
-          usuarioId,
+          usuarioId: activeUser,
+          cajaSessionId: cajaSession.id,
           subtotal: subtotal,
           descuento: descuentoAmount,
           total: total,
@@ -78,7 +92,7 @@ const create = async (req, res) => {
             tipo: 'SALIDA',
             cantidad: item.cantidad,
             motivo: 'venta',
-            usuarioId,
+            usuarioId: activeUser,
           },
         });
       }

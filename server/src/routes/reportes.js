@@ -24,12 +24,31 @@ const resumen = async (req, res) => {
         metodoPago: true,
         createdAt: true,
         anulada: true,
+        ventaDetalle: {
+          select: {
+            cantidad: true,
+            producto: {
+              select: {
+                precioCosto: true,
+              },
+            },
+          },
+        },
       },
     });
     
     const totalVentas = ventas.length;
     const totalIngresos = ventas.reduce((sum, v) => v.anulada ? sum : sum + v.total, 0);
     const totalAnuladas = ventas.filter(v => v.anulada).length;
+    
+    // Calcular costo total
+    const totalCosto = ventas.reduce((sum, v) => {
+      if (v.anulada) return sum;
+      const saleCosto = v.ventaDetalle.reduce((dSum, d) => dSum + (d.cantidad * (d.producto?.precioCosto || 0)), 0);
+      return sum + saleCosto;
+    }, 0);
+    
+    const utilidadBruta = totalIngresos - totalCosto;
     
     // Productos más vendidos
     const productosVendidos = await prisma.ventaDetalle.groupBy({
@@ -90,6 +109,8 @@ const resumen = async (req, res) => {
         totalIngresos,
         totalAnuladas,
         ticketPromedio: totalVentas > 0 ? totalIngresos / totalVentas : 0,
+        totalCosto,
+        utilidadBruta,
       },
       ventasPorDia: ventas.reduce((acc, v) => {
         const fecha = new Date(v.createdAt).toLocaleDateString();

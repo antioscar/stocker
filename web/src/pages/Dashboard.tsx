@@ -67,28 +67,35 @@ export const Dashboard = () => {
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
         </div>
       ) : data ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <p className="text-sm text-gray-600">Ventas de hoy</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+            <p className="text-sm text-gray-600 font-semibold">Ventas de hoy</p>
             <p className="text-3xl font-bold text-gray-900 mt-1">{data.resumen.totalVentas}</p>
             <p className="text-xs text-gray-500 mt-1">tickets registrados</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <p className="text-sm text-gray-600">Ingresos del día</p>
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+            <p className="text-sm text-gray-600 font-semibold">Ingresos del día</p>
             <p className="text-3xl font-bold text-green-600 mt-1">
               {formatCurrency(data.resumen.totalIngresos)}
             </p>
             <p className="text-xs text-gray-500 mt-1">ventas válidas</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <p className="text-sm text-gray-600">Ticket promedio</p>
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+            <p className="text-sm text-gray-600 font-semibold">Utilidad Bruta</p>
+            <p className="text-3xl font-bold text-blue-600 mt-1">
+              {formatCurrency((data.resumen as any).utilidadBruta || 0)}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">ganancia estimada</p>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+            <p className="text-sm text-gray-600 font-semibold">Ticket promedio</p>
             <p className="text-3xl font-bold text-gray-900 mt-1">
               {formatCurrency(data.resumen.ticketPromedio)}
             </p>
             <p className="text-xs text-gray-500 mt-1">por venta</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <p className="text-sm text-gray-600">Productos por agotarse</p>
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+            <p className="text-sm text-gray-600 font-semibold">Productos por agotarse</p>
             <p className="text-3xl font-bold text-red-600 mt-1">{data.stockBajo.length}</p>
             <p className="text-xs text-gray-500 mt-1">con stock bajo</p>
           </div>

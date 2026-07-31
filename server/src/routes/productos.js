@@ -9,10 +9,10 @@ const list = async (req, res) => {
     const where = {};
     
     if (search) {
-      where.nombre = {
-        contains: search,
-        mode: 'insensitive',
-      };
+      where.OR = [
+        { nombre: { contains: search } },
+        { codigoBarras: { contains: search } },
+      ];
     }
     
     if (categoriaId) {

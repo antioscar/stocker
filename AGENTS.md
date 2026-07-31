@@ -13,29 +13,18 @@
 
 ## Estado actual
 
-- **Fases A, B, C, D y E del plan completadas.** Proyecto funcional end-to-end y subido a GitHub.
-- **Backend `server/` FUNCIONA ✅** — `npm run dev` levanta en `:3000`, `npm run build` (tsc) sin errores.
-  - Unificado en **CommonJS** (se quitó `"type": "module"` de `server/package.json`).
-  - Prisma bajado a **v6** (`@prisma/client` + `prisma` ^6.19.3): el schema usaba formato v5/v6 y Prisma 7 rompía (`file:` y `@prisma/client`).
-  - `schema.prisma`: `Decimal @db.Decimal` → `Float` (SQLite no soporta Decimal nativo). Se agregaron **relaciones** (Categoria→Producto, Cliente→Venta, Usuario→Venta/MovimientoStock, etc.) que faltaban.
-  - `routes/index.js` reescrito en CJS puro; auth ahora desde `middleware/auth.js` (login, getCurrentUser + authenticateToken). Se eliminó el `routes/auth.js` que faltaba usando el que ya existía.
-  - `reportes.js`: quitadas 2 anotaciones TS (`where: any`) que rompían Node.
-  - Eliminados duplicados huérfanos: `server.ts`, `server.js`, `middleware/auth.ts`, `routes/productos.ts`, `prisma.config.ts`.
-  - `ventas.js`: se agregó generación de **folio correlativo** `BOL-####` en transacción (faltaba). Filtro por `clienteId` en `GET /ventas`.
-  - `tsconfig.json`: `moduleResolution: bundler` + `allowJs: true`; `process.env['PORT']` en `index.ts`.
-  - **CORS Habilitado:** Se incorporó el middleware `cors()` en el backend para permitir peticiones del cliente React.
-  - **Seed** `server/prisma/seed.js` (script `npm run seed`): crea admin `admin@stockcaja.cl` / `admin123` y config del negocio.
-  - BD SQLite creada en `server/prisma/dev.db` con migraciones `init` y `add_relations`.
-  - Probado end-to-end: login, CRUDs, venta transaccional con folio y descuento de stock, anulación con devolución de stock. Todo OK.
-- **Frontend `web/` FUNCIONA ✅** — `npm run dev` levanta en `:5173`, `npm run build` sin errores, `tsc --noEmit` limpio.
-  - ✅ Creada infra Vite: `index.html`, `src/main.tsx`, `App.tsx`, `index.css`, `vite.config.ts` (proxy `/api` → `:3000`), `tsconfig.json`, `tsconfig.node.json`, `tailwind.config.js`, `postcss.config.js`.
-  - ✅ Reescribidas desde cero las 5 páginas corruptas: `Clientes.tsx` (CRUD + historial de ventas), `Productos.tsx` (CRUD + categorías + búsqueda), `Usuarios.tsx` (CRUD + roles, solo ADMIN), `Reportes.tsx` (KPIs + ventas por día + más vendidos + stock bajo), `Configuracion.tsx` (negocio + folio, solo ADMIN).
-  - ✅ Creado `Dashboard.tsx` (resumen del día + accesos rápidos).
-  - ✅ `routes.tsx` con rutas reales a todas las páginas. `Layout.tsx` reescrito con `Outlet`, `NavLink`, logout real y control por rol.
-  - ✅ **Arreglo de Autenticación y Redirección:** Se corrigió el redireccionamiento después de iniciar sesión en `Login.tsx` y se normalizó el helper `apiFetch` y el `authService` para apuntar a la ruta relativa `/api` manejada por el proxy de Vite en lugar de URLs absolutas localhost fijas.
-  - ✅ **Análisis de Mercado Chileno:** Creado [analisis_mercado_plan.md](file:///c:/Users/oscar/Desktop/Proyectos/sinnombre1/docs/analisis_mercado_plan.md) comparando competidores chilenos (Bsale, Loyverse, Tivendo) y detallando necesidades clave.
-- **Git/GitHub:** ✅ **Repo subido a `https://github.com/antioscar/stocker`** (rama `main`). `.gitignore` raíz creado; `server/.env` con `JWT_SECRET` NO subido (verificado en el árbol remoto; solo `.env.example`).
-- **Plan:** A ✅ B ✅ C ✅ D ✅ **E ✅ (completo)** — contexto actualizado, `git init` + `push` a `antioscar/stocker` realizado. Proyecto funcional end-to-end.
+- **Fases A, B, C, D y E del plan inicial completadas. Fase 1 (Operación Diaria Express) COMPLETADA. ✅**
+- **Backend `server/` FUNCIONA ✅** — `npm run dev` levanta en `:3000` con CORS y base de datos SQLite sincronizada.
+  - Se crearon los modelos `CajaSession` y `MovimientoCaja` en SQLite con migraciones.
+  - Implementado controlador `/api/caja` para apertura, cierre, arqueos y transacciones manuales.
+  - Las ventas validan sesión activa y se asocian al turno de caja.
+  - Los reportes resumen incluyen cálculo de **Utilidad Bruta** (Ingresos - Costos).
+- **Frontend `web/` FUNCIONA ✅** — `npm run dev` levanta en `:5173`, compilación de TypeScript limpia (`tsc --noEmit` OK).
+  - ✅ Implementado modal `CajaModal` para el control de turnos y transacciones de caja.
+  - ✅ El POS (`POS.tsx`) bloquea el acceso si la caja está cerrada. Implementa escaneo de códigos de barras continuo y desglose correcto del IVA bruto chileno.
+  - ✅ Se añadió el indicador de caja en la barra superior del Layout.
+  - ✅ Dashboard y Reportes reflejan ahora las ganancias (utilidad bruta).
+- **Plan de Fases:** Fase 1: Completada ✅ | Fase 2: Pendiente ⏳
 
 
 ## Componentes Frontend Completados

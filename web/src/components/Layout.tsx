@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { apiFetch } from '../services/api';
 
 const navItems = [
   { to: '/', label: 'Dashboard' },
@@ -17,6 +19,19 @@ const adminNavItems = [
 export const Layout = () => {
   const { user, isLoading, logout } = useAuth();
   const navigate = useNavigate();
+  const [cajaAbierta, setCajaAbierta] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      apiFetch('/caja/estado')
+        .then((res) => {
+          setCajaAbierta(res?.abierta || false);
+        })
+        .catch(() => {
+          setCajaAbierta(false);
+        });
+    }
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -47,6 +62,13 @@ export const Layout = () => {
               <p className="text-sm text-gray-600">Gestión de inventario y ventas</p>
             </div>
             <div className="flex items-center space-x-4">
+              {cajaAbierta !== null && (
+                <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${
+                  cajaAbierta ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  {cajaAbierta ? 'Caja Abierta' : 'Caja Cerrada'}
+                </span>
+              )}
               <span className="text-sm text-gray-600">Hola, {user.nombre}</span>
               <span
                 className={`px-2 py-1 text-xs rounded-full ${

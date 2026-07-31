@@ -13,6 +13,13 @@ router.get('/health', (req, res) => {
 router.post('/auth/login', login);
 router.get('/auth/me', authenticateToken, getCurrentUser);
 
+// Caja routes
+const caja = require('./caja');
+router.get('/caja/estado', authenticateToken, caja.getEstado);
+router.post('/caja/apertura', authenticateToken, caja.apertura);
+router.post('/caja/cierre', authenticateToken, caja.cierre);
+router.post('/caja/movimientos', authenticateToken, caja.crearMovimiento);
+
 // Product routes
 router.get('/productos', require('./productos').list);
 router.get('/productos/:id', require('./productos').getById);

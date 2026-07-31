@@ -22,9 +22,9 @@ interface CartProps {
 }
 
 export const Cart = ({ items, onUpdateItem, onRemoveItem, onClearCart, onCheckout }: CartProps) => {
-  const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
-  const impuesto = subtotal * 0.19; // 19% IVA
-  const total = subtotal + impuesto;
+  const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+  const neto = total / 1.19;
+  const impuesto = total - neto;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CL', {
@@ -104,15 +104,15 @@ export const Cart = ({ items, onUpdateItem, onRemoveItem, onClearCart, onCheckou
         <div className="p-4 border-t border-gray-200 bg-gray-50">
           <div className="space-y-2 mb-4">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Subtotal:</span>
-              <span className="font-medium">{formatCurrency(subtotal)}</span>
+              <span className="text-gray-600">Neto:</span>
+              <span className="font-medium">{formatCurrency(neto)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">IVA (19%):</span>
               <span className="font-medium">{formatCurrency(impuesto)}</span>
             </div>
             <div className="flex justify-between text-lg font-bold border-t pt-2">
-              <span>Total:</span>
+              <span>Total (Bruto):</span>
               <span>{formatCurrency(total)}</span>
             </div>
           </div>
