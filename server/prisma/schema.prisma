@@ -36,10 +36,11 @@ model Producto {
   categoriaId   Int
   precioVenta   Float
   precioCosto   Float
-  stock         Int      @default(0)
-  stockMinimo   Int      @default(0)
+  stock         Float    @default(0)
+  stockMinimo   Float    @default(0)
   unidad        String   // "unidad", "kg", "lb", etc.
   activo        Boolean  @default(true)
+  esPesable     Boolean  @default(false)
   createdAt     DateTime @default(now())
 
   categoria Categoria @relation(fields: [categoriaId], references: [id])
@@ -111,7 +112,7 @@ model CompraDetalle {
   id                  Int      @id @default(autoincrement())
   compraId            Int
   productoId          Int
-  cantidad            Int
+  cantidad            Float
   precioCostoUnitario Float
 
   compra   CompraInventario @relation(fields: [compraId], references: [id])
@@ -150,7 +151,7 @@ model VentaDetalle {
   id        Int     @id @default(autoincrement())
   ventaId   Int
   productoId Int
-  cantidad  Int
+  cantidad  Float
   precioUnitario Float
   subtotal  Float
 
@@ -165,7 +166,7 @@ model MovimientoStock {
   id          Int       @id @default(autoincrement())
   productoId  Int
   tipo        String    // "ENTRADA", "SALIDA", "AJUSTE"
-  cantidad     Int
+  cantidad     Float
   motivo      String?   // "venta", "anulación", "ajuste"
   usuarioId   Int?
   createdAt   DateTime  @default(now())

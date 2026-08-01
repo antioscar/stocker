@@ -24,6 +24,7 @@ export interface Producto {
   stockMinimo: number;
   unidad: string;
   activo: boolean;
+  esPesable: boolean;
   createdAt: string;
   categoria?: Categoria;
 }

@@ -211,6 +211,10 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
   * **Base de Datos:** Incorporados modelos `Proveedor`, `CompraInventario` y `CompraDetalle` al esquema Prisma. Migración sqlite `add_proveedor_and_compras` aplicada exitosamente.
   * **Backend:** Endpoints para el CRUD completo de proveedores y la creación transaccional de compras (suma stock de productos, actualiza precio costo y venta sugerido, registra el folio de la factura e ingresa movimientos tipo ENTRADA).
   * **Frontend:** Desarrollada la página `Proveedores.tsx` (administración de contactos) y la página `Compras.tsx` (reposición rápida con buscador enfocado por escáner, auto-cálculo de márgenes porcentuales por ítem en vivo y confirmación en lote). Añadidos los enlaces correspondientes al menú de navegación.
+- **Implementación de la Fase C (Venta de Productos Pesables / Decimales):**
+  * **Base de Datos:** Incorporado el flag `esPesable` (Boolean) en el modelo `Producto`. Modificados los tipos de cantidad y stock de `Int` a `Float` en los modelos `Producto`, `VentaDetalle`, `MovimientoStock` y `CompraDetalle` para admitir decimales en toda la trazabilidad.
+  * **Backend:** Actualizado `compras.js` para parsear la cantidad ingresada mediante `parseFloat` en lugar de enteros.
+  * **Frontend:** Agregado checkbox en el CRUD de productos, badge visual de "Pesable", formato de decimales en stock (`toFixed(3)`), modal ágil en el POS para ingresar el peso en kg (con subtotal estimado en vivo) y botón interactivo en el carrito para re-editar el peso de forma ágil con teclado.
 - **Calidad:** Verificado `tsc --noEmit` y ejecutado `npm run build` exitosamente sin ningún error.
 
 

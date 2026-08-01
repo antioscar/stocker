@@ -3,16 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../services/api';
 import { Cart } from '../components/Cart';
 import { CajaModal } from '../components/CajaModal';
-import type { Cliente } from '../types';
-
-interface Producto {
-  id: number;
-  nombre: string;
-  codigoBarras?: string;
-  precioVenta: number;
-  stock: number;
-  unidad: string;
-}
+import type { Cliente, Producto } from '../types';
 
 interface CartItem {
   producto: Producto;
@@ -38,6 +29,11 @@ export const POS = () => {
 
   // Clientes para fiar
   const [clientes, setClientes] = useState<Cliente[]>([]);
+
+  // Estados de productos pesables
+  const [pesableProduct, setPesableProduct] = useState<Producto | null>(null);
+  const [pesoInput, setPesoInput] = useState<string>('');
+  const [editingCartItemIndex, setEditingCartItemIndex] = useState<number | null>(null);
 
   // Estados de Búsqueda
   const [searchVal, setSearchVal] = useState('');
@@ -143,6 +139,19 @@ export const POS = () => {
       return;
     }
 
+    if (producto.esPesable) {
+      const existingIndex = cartItems.findIndex(item => item.producto.id === producto.id);
+      if (existingIndex >= 0) {
+        setEditingCartItemIndex(existingIndex);
+        setPesoInput(String(cartItems[existingIndex].cantidad));
+      } else {
+        setEditingCartItemIndex(null);
+        setPesoInput('');
+      }
+      setPesableProduct(producto);
+      return;
+    }
+
     const existingItemIndex = cartItems.findIndex(item => item.producto.id === producto.id);
     
     if (existingItemIndex >= 0) {
@@ -176,6 +185,52 @@ export const POS = () => {
       searchInputRef.current.focus();
     }
   };
+
+  const handlePesoSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pesableProduct) return;
+
+    const peso = parseFloat(pesoInput.replace(',', '.'));
+    if (isNaN(peso) || peso <= 0) {
+      alert('Por favor ingrese un peso válido mayor a cero');
+      return;
+    }
+
+    if (peso > pesableProduct.stock) {
+      alert(`No hay suficiente stock. Disponible: ${pesoFormat(pesableProduct.stock)} ${pesableProduct.unidad}`);
+      return;
+    }
+
+    if (editingCartItemIndex !== null) {
+      const newCartItems = [...cartItems];
+      newCartItems[editingCartItemIndex].cantidad = peso;
+      newCartItems[editingCartItemIndex].subtotal = peso * newCartItems[editingCartItemIndex].precioUnitario;
+      setCartItems(newCartItems);
+    } else {
+      const newCartItems = [
+        ...cartItems,
+        {
+          producto: pesableProduct,
+          cantidad: peso,
+          precioUnitario: pesableProduct.precioVenta,
+          subtotal: peso * pesableProduct.precioVenta,
+        }
+      ];
+      setCartItems(newCartItems);
+    }
+
+    setPesableProduct(null);
+    setPesoInput('');
+    setEditingCartItemIndex(null);
+    setSearchVal('');
+    setSearchResults([]);
+    setSearchSelectedIndex(-1);
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  };
+
+  const pesoFormat = (val: number) => Number(val.toFixed(3));
 
   const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -246,6 +301,13 @@ export const POS = () => {
   const handleRemoveItem = (index: number) => {
     const newCartItems = cartItems.filter((_, i) => i !== index);
     setCartItems(newCartItems);
+  };
+
+  const handleEditPesable = (index: number) => {
+    const item = cartItems[index];
+    setEditingCartItemIndex(index);
+    setPesoInput(String(item.cantidad));
+    setPesableProduct(item.producto as Producto);
   };
 
   const handleClearCart = () => {
@@ -453,6 +515,7 @@ export const POS = () => {
             items={cartItems}
             onUpdateItem={handleUpdateItem}
             onRemoveItem={handleRemoveItem}
+            onEditPesable={handleEditPesable}
           />
         </div>
 
@@ -557,6 +620,94 @@ export const POS = () => {
           }}
           sessionData={cajaSession}
         />
+      )}
+
+      {/* Modal de Ingreso de Peso */}
+      {pesableProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 backdrop-blur-sm p-4">
+          <div className="bg-white max-w-md w-full rounded-lg border border-slate-200 shadow-xl overflow-hidden animate-in fade-in-50 duration-200">
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-display font-bold text-slate-950 text-base">Ingreso de Cantidad / Peso</h3>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setPesableProduct(null);
+                  setPesoInput('');
+                  setEditingCartItemIndex(null);
+                }} 
+                className="text-slate-400 hover:text-slate-600 text-lg cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            
+            <form onSubmit={handlePesoSubmit} className="p-5 space-y-4">
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Producto</p>
+                <p className="font-bold text-slate-900 mt-0.5">{pesableProduct.nombre}</p>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Precio por {pesableProduct.unidad}: {formatCurrency(pesableProduct.precioVenta)} | Stock: {pesoFormat(pesableProduct.stock)} {pesableProduct.unidad}
+                </p>
+              </div>
+
+              <div>
+                <label className="etiqueta" htmlFor="pesoInput">
+                  Cantidad ({pesableProduct.unidad}) *
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    type="text"
+                    id="pesoInput"
+                    required
+                    autoFocus
+                    value={pesoInput}
+                    onChange={(e) => setPesoInput(e.target.value)}
+                    placeholder="Ej: 1.450"
+                    className="input text-lg font-bold pr-12 font-ledger"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
+                    <span className="text-slate-400 font-bold uppercase text-xs">{pesableProduct.unidad}</span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Puede ingresar decimales usando punto o coma. Ej: 0.350 para 350 gramos.
+                </p>
+              </div>
+
+              {/* Subtotal estimado en vivo */}
+              {(() => {
+                const parsed = parseFloat(pesoInput.replace(',', '.'));
+                const sub = !isNaN(parsed) && parsed > 0 ? parsed * pesableProduct.precioVenta : 0;
+                return (
+                  <div className="bg-slate-50 p-3 rounded border border-slate-100 flex justify-between items-center text-xs">
+                    <span className="font-bold text-slate-500 uppercase tracking-wider">Subtotal Estimado:</span>
+                    <span className="font-bold text-slate-900 text-sm font-ledger">{formatCurrency(sub)}</span>
+                  </div>
+                );
+              })()}
+
+              <div className="flex justify-end space-x-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPesableProduct(null);
+                    setPesoInput('');
+                    setEditingCartItemIndex(null);
+                  }}
+                  className="btn btn-papel text-xs uppercase"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primario text-xs uppercase"
+                >
+                  Aceptar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

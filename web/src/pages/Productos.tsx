@@ -11,6 +11,7 @@ interface ProductoForm {
   stock: string;
   stockMinimo: string;
   unidad: string;
+  esPesable: boolean;
 }
 
 const emptyForm: ProductoForm = {
@@ -22,6 +23,7 @@ const emptyForm: ProductoForm = {
   stock: '',
   stockMinimo: '',
   unidad: 'unidad',
+  esPesable: false,
 };
 
 export const Productos = () => {
@@ -82,6 +84,7 @@ export const Productos = () => {
       stock: String(producto.stock),
       stockMinimo: String(producto.stockMinimo),
       unidad: producto.unidad,
+      esPesable: producto.esPesable || false,
     });
     setError('');
     setModalOpen(true);
@@ -99,9 +102,10 @@ export const Productos = () => {
       categoriaId: Number(form.categoriaId),
       precioVenta: parseFloat(form.precioVenta),
       precioCosto: parseFloat(form.precioCosto),
-      stock: parseInt(form.stock) || 0,
-      stockMinimo: parseInt(form.stockMinimo) || 0,
+      stock: parseFloat(form.stock) || 0,
+      stockMinimo: parseFloat(form.stockMinimo) || 0,
       unidad: form.unidad,
+      esPesable: form.esPesable,
     };
 
     try {
@@ -211,7 +215,14 @@ export const Productos = () => {
                 {productos.map((producto) => (
                   <tr key={producto.id}>
                     <td className="px-4 py-3">
-                      <p className="font-medium text-tinta">{producto.nombre}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-medium text-tinta">{producto.nombre}</p>
+                        {producto.esPesable && (
+                          <span className="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider select-none">
+                            Pesable
+                          </span>
+                        )}
+                      </div>
                       {producto.codigoBarras && (
                         <p className="mt-0.5 font-ledger text-xs text-tintaTenue">
                           Cód: {producto.codigoBarras}
@@ -233,7 +244,7 @@ export const Productos = () => {
                           producto.stock <= producto.stockMinimo ? 'sello-alerta' : 'sello-gris'
                         }`}
                       >
-                        {producto.stock} {producto.unidad.toUpperCase()}
+                        {Number(producto.stock.toFixed(3))} {producto.unidad.toUpperCase()}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -349,6 +360,7 @@ export const Productos = () => {
                   <label className="etiqueta">Stock</label>
                   <input
                     type="number"
+                    step="any"
                     min="0"
                     value={form.stock}
                     onChange={(e) => setForm({ ...form, stock: e.target.value })}
@@ -359,6 +371,7 @@ export const Productos = () => {
                   <label className="etiqueta">Stock mínimo</label>
                   <input
                     type="number"
+                    step="any"
                     min="0"
                     value={form.stockMinimo}
                     onChange={(e) => setForm({ ...form, stockMinimo: e.target.value })}
@@ -378,6 +391,18 @@ export const Productos = () => {
                     <option value="lt">lt</option>
                   </select>
                 </div>
+              </div>
+              <div className="flex items-center space-x-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="esPesable"
+                  checked={form.esPesable}
+                  onChange={(e) => setForm({ ...form, esPesable: e.target.checked })}
+                  className="rounded border-slate-300 text-hoja focus:ring-hoja h-4 w-4 cursor-pointer"
+                />
+                <label htmlFor="esPesable" className="text-xs font-bold text-tinta select-none cursor-pointer">
+                  Producto se vende por peso (Pesable / Decimal)
+                </label>
               </div>
               <div className="flex justify-end space-x-3 pt-3">
                 <button type="button" onClick={() => setModalOpen(false)} className="btn btn-papel">

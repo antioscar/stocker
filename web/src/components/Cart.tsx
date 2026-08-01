@@ -4,6 +4,7 @@ interface Producto {
   precioVenta: number;
   stock: number;
   unidad: string;
+  esPesable?: boolean;
 }
 
 interface CartItem {
@@ -17,9 +18,10 @@ interface CartProps {
   items: CartItem[];
   onUpdateItem: (index: number, cantidad: number) => void;
   onRemoveItem: (index: number) => void;
+  onEditPesable?: (index: number) => void;
 }
 
-export const Cart = ({ items, onUpdateItem, onRemoveItem }: CartProps) => {
+export const Cart = ({ items, onUpdateItem, onRemoveItem, onEditPesable }: CartProps) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CL', {
       style: 'currency',
@@ -58,25 +60,36 @@ export const Cart = ({ items, onUpdateItem, onRemoveItem }: CartProps) => {
               {items.map((item, index) => (
                 <tr key={index}>
                   <td className="py-2 text-center">
-                    <div className="flex items-center justify-center gap-1">
+                    {item.producto.esPesable ? (
                       <button
                         type="button"
-                        onClick={() => onUpdateItem(index, Math.max(1, item.cantidad - 1))}
-                        className="flex h-8 w-8 items-center justify-center rounded-ficha border border-pautaOscura bg-papelAlto font-bold text-tinta transition-colors hover:bg-card"
+                        onClick={() => onEditPesable && onEditPesable(index)}
+                        className="px-2 py-1 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded font-ledger font-bold text-xs text-amber-700 transition-colors uppercase select-none cursor-pointer"
+                        title="Haga clic para editar el peso"
                       >
-                        −
+                        {Number(item.cantidad.toFixed(3))} {item.producto.unidad}
                       </button>
-                      <span className="w-10 text-center font-ledger text-base font-bold text-tinta">
-                        {item.cantidad}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => onUpdateItem(index, item.cantidad + 1)}
-                        className="flex h-8 w-8 items-center justify-center rounded-ficha border border-pautaOscura bg-papelAlto font-bold text-tinta transition-colors hover:bg-card"
-                      >
-                        +
-                      </button>
-                    </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => onUpdateItem(index, Math.max(1, item.cantidad - 1))}
+                          className="flex h-8 w-8 items-center justify-center rounded-ficha border border-pautaOscura bg-papelAlto font-bold text-tinta transition-colors hover:bg-card"
+                        >
+                          −
+                        </button>
+                        <span className="w-10 text-center font-ledger text-base font-bold text-tinta">
+                          {item.cantidad}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => onUpdateItem(index, item.cantidad + 1)}
+                          className="flex h-8 w-8 items-center justify-center rounded-ficha border border-pautaOscura bg-papelAlto font-bold text-tinta transition-colors hover:bg-card"
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <div className="font-medium text-tinta">{item.producto.nombre}</div>

@@ -27,7 +27,7 @@ const create = async (req, res) => {
         total += itemTotal;
         return {
           productoId: parseInt(item.productoId),
-          cantidad: parseInt(item.cantidad),
+          cantidad: parseFloat(item.cantidad),
           precioCostoUnitario: parseFloat(item.precioCostoUnitario),
           precioVentaSugerido: item.precioVentaSugerido ? parseFloat(item.precioVentaSugerido) : undefined,
         };
