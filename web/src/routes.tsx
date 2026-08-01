@@ -9,6 +9,8 @@ import { Clientes } from './pages/Clientes';
 import { Reportes } from './pages/Reportes';
 import { Usuarios } from './pages/Usuarios';
 import { Configuracion } from './pages/Configuracion';
+import { Proveedores } from './pages/Proveedores';
+import { Compras } from './pages/Compras';
 
 export const AppRoutes = () => {
   return (
@@ -19,6 +21,8 @@ export const AppRoutes = () => {
         <Route path="ventas" element={<POS />} />
         <Route path="productos" element={<Productos />} />
         <Route path="clientes" element={<Clientes />} />
+        <Route path="proveedores" element={<Proveedores />} />
+        <Route path="compras" element={<Compras />} />
         <Route path="reportes" element={<Reportes />} />
         <Route path="usuarios" element={<Usuarios />} />
         <Route path="configuracion" element={<Configuracion />} />

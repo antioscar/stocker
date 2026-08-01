@@ -207,7 +207,12 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
   * **Base de Datos:** Actualizado el modelo de Prisma agregando `saldoDeuda` a la tabla `Cliente` y creando la tabla `PagoCredito`. Migración sqlite aplicada con éxito.
   * **Backend:** Modificada la ruta de checkout de ventas para admitir método de pago `'fiado'`, incrementando de manera atómica el saldo deudor del cliente. Creados endpoints para registrar abonos y obtener la cartola / historial de cuenta corriente (compras + abonos).
   * **Frontend:** Implementado selector de cliente por dropdown en el POS (mostrando deuda en tiempo real), botón de pago "fiado" (solo activo si hay cliente) y atajo F2. En la pantalla de Clientes se muestra la deuda, un modal con la cartola de movimientos unificada, y un modal de abonos con re-cálculo en tiempo real.
+- **Implementación de la Fase B (Carga Rápida de Stock y Proveedores):**
+  * **Base de Datos:** Incorporados modelos `Proveedor`, `CompraInventario` y `CompraDetalle` al esquema Prisma. Migración sqlite `add_proveedor_and_compras` aplicada exitosamente.
+  * **Backend:** Endpoints para el CRUD completo de proveedores y la creación transaccional de compras (suma stock de productos, actualiza precio costo y venta sugerido, registra el folio de la factura e ingresa movimientos tipo ENTRADA).
+  * **Frontend:** Desarrollada la página `Proveedores.tsx` (administración de contactos) y la página `Compras.tsx` (reposición rápida con buscador enfocado por escáner, auto-cálculo de márgenes porcentuales por ítem en vivo y confirmación en lote). Añadidos los enlaces correspondientes al menú de navegación.
 - **Calidad:** Verificado `tsc --noEmit` y ejecutado `npm run build` exitosamente sin ningún error.
+
 
 
 

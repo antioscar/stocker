@@ -109,3 +109,28 @@ export interface ResumenReportes {
   productosMasVendidos: Array<{ productoId: number; nombre?: string; codigoBarras?: string; cantidadVendida: number; ingresos: number }>;
   stockBajo: Array<{ id: number; nombre: string; stock: number; stockMinimo: number; codigoBarras?: string; unidad?: string; categoria?: { nombre: string } }>;
 }
+
+export interface Proveedor {
+  id: number;
+  nombre: string;
+  rut?: string;
+  telefono?: string;
+  email?: string;
+  direccion?: string;
+  activo: boolean;
+  createdAt: string;
+}
+
+export interface CompraInventario {
+  id: number;
+  proveedorId: number;
+  usuarioId: number;
+  documentoTipo: string;
+  documentoFolio: string;
+  total: number;
+  createdAt: string;
+  proveedor?: Proveedor;
+  usuario?: {
+    nombre: string;
+  };
+}

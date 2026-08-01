@@ -40,6 +40,17 @@ router.delete('/clientes/:id', require('./clientes').delete);
 router.post('/clientes/:id/abonos', authenticateToken, require('./clientes').registrarAbono);
 router.get('/clientes/:id/historial-cuenta', authenticateToken, require('./clientes').getHistorialCuenta);
 
+// Supplier routes
+router.get('/proveedores', require('./proveedores').list);
+router.get('/proveedores/:id', require('./proveedores').getById);
+router.post('/proveedores', require('./proveedores').create);
+router.put('/proveedores/:id', require('./proveedores').update);
+router.delete('/proveedores/:id', require('./proveedores').delete);
+
+// Purchase routes
+router.post('/compras', authenticateToken, require('./compras').create);
+router.get('/compras', authenticateToken, require('./compras').list);
+
 // User routes (admin only)
 router.get('/usuarios', require('./usuarios').list);
 router.get('/usuarios/:id', require('./usuarios').getById);

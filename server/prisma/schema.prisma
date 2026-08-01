@@ -20,6 +20,7 @@ model Usuario {
   movimientos MovimientoStock[]
   cajaSessions CajaSession[]
   pagosCredito PagoCredito[]
+  compras CompraInventario[]
 }
 
 model Categoria {
@@ -44,6 +45,7 @@ model Producto {
   categoria Categoria @relation(fields: [categoriaId], references: [id])
   ventaDetalles VentaDetalle[]
   movimientos  MovimientoStock[]
+  compraDetalles CompraDetalle[]
 
   @@index([categoriaId])
 }
@@ -74,6 +76,51 @@ model PagoCredito {
   @@index([clienteId])
   @@index([usuarioId])
 }
+
+model Proveedor {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  rut       String?  @unique
+  telefono  String?
+  email     String?
+  direccion String?
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  compras CompraInventario[]
+}
+
+model CompraInventario {
+  id             Int      @id @default(autoincrement())
+  proveedorId    Int
+  usuarioId      Int
+  documentoTipo  String   // "FACTURA", "GUIA"
+  documentoFolio String
+  total          Float
+  createdAt      DateTime @default(now())
+
+  proveedor Proveedor @relation(fields: [proveedorId], references: [id])
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id])
+  detalles  CompraDetalle[]
+
+  @@index([proveedorId])
+  @@index([usuarioId])
+}
+
+model CompraDetalle {
+  id                  Int      @id @default(autoincrement())
+  compraId            Int
+  productoId          Int
+  cantidad            Int
+  precioCostoUnitario Float
+
+  compra   CompraInventario @relation(fields: [compraId], references: [id])
+  producto Producto         @relation(fields: [productoId], references: [id])
+
+  @@index([compraId])
+  @@index([productoId])
+}
+
 
 model Venta {
   id           Int       @id @default(autoincrement())
