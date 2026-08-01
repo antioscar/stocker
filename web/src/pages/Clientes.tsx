@@ -132,91 +132,77 @@ export const Clientes = () => {
       minimumFractionDigits: 0,
     }).format(amount);
 
-  const inputClass =
-    'w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent';
-
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="ficha-pestana-grafito p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Clientes</h2>
-            <p className="text-sm text-gray-600">Gestión de clientes y su historial de compras</p>
+            <h2 className="font-display text-xl font-bold tracking-tight text-tinta">Clientes</h2>
+            <p className="mt-0.5 font-ledger text-xs uppercase tracking-sello text-tintaSuave">
+              Control de cuentas de clientes e historial de compras
+            </p>
           </div>
-          <button
-            onClick={openCreate}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
+          <button onClick={openCreate} className="btn btn-primario">
             + Nuevo cliente
           </button>
         </div>
 
         {error && (
-          <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="mt-4 border-2 border-oferta bg-oferta/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-oferta">
             {error}
           </div>
         )}
         {success && (
-          <div className="mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          <div className="mt-4 border-2 border-hoja bg-hoja/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-hoja">
             {success}
           </div>
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="ficha overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+            <div className="h-10 w-10 animate-spin rounded-full border-2 border-pauta border-b-oferta"></div>
           </div>
         ) : clientes.length === 0 ? (
-          <div className="text-center py-16 text-gray-500">No hay clientes registrados</div>
+          <div className="py-16 text-center font-ledger text-xs uppercase tracking-sello text-tintaTenue">
+            No hay clientes registrados
+          </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="tabla min-w-full">
+              <thead>
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nombre
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Teléfono
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Dirección
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
+                  <th>Nombre</th>
+                  <th>Teléfono</th>
+                  <th>Email</th>
+                  <th>Dirección</th>
+                  <th className="text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody>
                 {clientes.map((cliente) => (
-                  <tr key={cliente.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-gray-900">{cliente.nombre}</p>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{cliente.telefono ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{cliente.email ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{cliente.direccion ?? '-'}</td>
-                    <td className="px-4 py-3 text-right space-x-2">
+                  <tr key={cliente.id}>
+                    <td className="px-4 py-3 font-medium text-tinta">{cliente.nombre}</td>
+                    <td className="px-4 py-3 text-tintaSuave">{cliente.telefono ?? '-'}</td>
+                    <td className="px-4 py-3 text-tintaSuave">{cliente.email ?? '-'}</td>
+                    <td className="px-4 py-3 text-tintaSuave">{cliente.direccion ?? '-'}</td>
+                    <td className="space-x-3 px-4 py-3 text-right">
                       <button
                         onClick={() => openHistorial(cliente)}
-                        className="text-green-600 hover:text-green-800 text-sm"
+                        className="font-ledger text-xs font-bold uppercase tracking-sello text-hoja transition-colors hover:underline"
                       >
                         Historial
                       </button>
                       <button
                         onClick={() => openEdit(cliente)}
-                        className="text-blue-600 hover:text-blue-800 text-sm"
+                        className="font-ledger text-xs font-bold uppercase tracking-sello text-tintaSuave transition-colors hover:text-tinta"
                       >
                         Editar
                       </button>
                       <button
                         onClick={() => handleDelete(cliente.id)}
-                        className="text-red-600 hover:text-red-800 text-sm"
+                        className="font-ledger text-xs font-bold uppercase tracking-sello text-oferta transition-colors hover:underline"
                       >
                         Eliminar
                       </button>
@@ -230,75 +216,68 @@ export const Clientes = () => {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta/60 p-4 backdrop-blur-sm">
+          <div className="ficha-pestana w-full max-w-lg overflow-hidden">
+            <div className="flex select-none items-center justify-between border-b border-pauta px-5 py-4">
+              <h3 className="font-ledger text-sm font-bold uppercase tracking-sello text-tinta">
                 {editingId ? 'Editar cliente' : 'Nuevo cliente'}
               </h3>
               <button
                 onClick={() => setModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700 text-xl"
+                className="text-2xl font-bold leading-none text-tintaSuave transition-colors hover:text-oferta"
               >
                 ×
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-4 space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-4 p-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+                <label className="etiqueta">Nombre *</label>
                 <input
                   type="text"
                   required
                   value={form.nombre}
                   onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                  className={inputClass}
+                  className="input"
                   placeholder="Ej: Juan Pérez"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                  <label className="etiqueta">Teléfono</label>
                   <input
                     type="tel"
                     value={form.telefono}
                     onChange={(e) => setForm({ ...form, telefono: e.target.value })}
-                    className={inputClass}
+                    className="input"
                     placeholder="+56 9 1234 5678"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="etiqueta">Email</label>
                   <input
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className={inputClass}
+                    className="input"
                     placeholder="cliente@correo.cl"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                <label className="etiqueta">Dirección</label>
                 <input
                   type="text"
                   value={form.direccion}
                   onChange={(e) => setForm({ ...form, direccion: e.target.value })}
-                  className={inputClass}
+                  className="input"
                   placeholder="Calle 123, Comuna"
                 />
               </div>
-              <div className="flex justify-end space-x-2 pt-3">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-                >
+              <div className="flex justify-end space-x-3 pt-3">
+                <button type="button" onClick={() => setModalOpen(false)} className="btn btn-papel">
                   Cancelar
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
+                <button type="submit" className="btn btn-primario">
                   {editingId ? 'Guardar cambios' : 'Crear cliente'}
                 </button>
               </div>
@@ -308,66 +287,52 @@ export const Clientes = () => {
       )}
 
       {historialCliente && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta/60 p-4 backdrop-blur-sm">
+          <div className="ficha-pestana-hoja w-full max-w-2xl overflow-hidden">
+            <div className="flex select-none items-center justify-between border-b border-pauta px-5 py-4">
+              <h3 className="font-ledger text-sm font-bold uppercase tracking-sello text-tinta">
                 Historial de {historialCliente.nombre}
               </h3>
               <button
                 onClick={() => setHistorialCliente(null)}
-                className="text-gray-500 hover:text-gray-700 text-xl"
+                className="text-2xl font-bold leading-none text-tintaSuave transition-colors hover:text-oferta"
               >
                 ×
               </button>
             </div>
-            <div className="p-4 max-h-[70vh] overflow-y-auto">
+            <div className="max-h-[70vh] overflow-y-auto bg-card">
               {historialLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-pauta border-b-oferta"></div>
                 </div>
               ) : ventasHistorial.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="py-8 text-center font-ledger text-xs uppercase tracking-sello text-tintaTenue">
                   Este cliente no tiene compras registradas
                 </div>
               ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="tabla min-w-full">
+                  <thead className="bg-card">
                     <tr>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                        Folio
-                      </th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                        Fecha
-                      </th>
-                      <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                        Total
-                      </th>
-                      <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
-                        Estado
-                      </th>
+                      <th>Folio</th>
+                      <th>Fecha</th>
+                      <th className="text-right">Total</th>
+                      <th className="text-center">Estado</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody>
                     {ventasHistorial.map((venta) => (
                       <tr key={venta.id}>
-                        <td className="px-4 py-2 text-sm font-medium text-gray-900">
+                        <td className="px-4 py-2.5 font-ledger font-bold text-tinta">
                           {venta.folio}
                         </td>
-                        <td className="px-4 py-2 text-sm text-gray-600">
+                        <td className="px-4 py-2.5 text-tintaSuave">
                           {new Date(venta.createdAt).toLocaleDateString('es-CL')}
                         </td>
-                        <td className="px-4 py-2 text-sm text-right">
+                        <td className="px-4 py-2.5 text-right font-ledger font-bold text-tinta">
                           {formatCurrency(venta.total)}
                         </td>
-                        <td className="px-4 py-2 text-sm text-center">
-                          <span
-                            className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                              venta.anulada
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-green-100 text-green-800'
-                            }`}
-                          >
+                        <td className="px-4 py-2.5 text-center">
+                          <span className={`sello ${venta.anulada ? 'sello-alerta' : 'sello-ok'}`}>
                             {venta.anulada ? 'Anulada' : 'Válida'}
                           </span>
                         </td>

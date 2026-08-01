@@ -65,41 +65,47 @@ export const ProductSearch = ({ onProductSelect, onClose }: ProductSearchProps) 
     }
   };
 
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      minimumFractionDigits: 0,
+    }).format(amount);
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-900">Buscar Productos</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta/60 p-4 backdrop-blur-sm">
+      <div className="ficha-pestana flex max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden">
+        <div className="flex select-none items-center justify-between border-b border-pauta px-5 py-4">
+          <h3 className="font-ledger text-sm font-bold uppercase tracking-sello text-tinta">
+            Buscar productos
+          </h3>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-xl"
+            className="text-2xl font-bold leading-none text-tintaSuave transition-colors hover:text-oferta"
           >
             ×
           </button>
         </div>
 
-        {/* Search Input */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="border-b border-pauta p-4">
           <input
             type="text"
             placeholder="Buscar por nombre o código de barras..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input"
             autoFocus
           />
         </div>
 
-        {/* Product List */}
         <div className="flex-1 overflow-y-auto p-4">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-pauta border-b-oferta"></div>
             </div>
           ) : productos.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="py-8 text-center font-ledger text-sm text-tintaSuave">
               No se encontraron productos
             </div>
           ) : (
@@ -108,20 +114,23 @@ export const ProductSearch = ({ onProductSelect, onClose }: ProductSearchProps) 
                 <button
                   key={producto.id}
                   onClick={() => onProductSelect(producto)}
-                  className={`p-3 text-left border rounded-lg hover:bg-gray-50 transition-colors ${index === selectedIndex ? 'bg-blue-50 border-blue-500' : 'border-gray-200'}`}
+                  className={`rounded-ficha border p-3 text-left transition-colors ${
+                    index === selectedIndex
+                      ? 'border-oferta bg-oferta/10'
+                      : 'border-pautaOscura hover:bg-papelAlto'
+                  }`}
                 >
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h4 className="font-medium text-gray-900">{producto.nombre}</h4>
-                      <p className="text-sm text-gray-600">
-                        {producto.codigoBarras && `Código: ${producto.codigoBarras} • `}
-                        ${producto.precioVenta.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })} • Stock: {producto.stock} {producto.unidad}
+                      <h4 className="font-medium text-tinta">{producto.nombre}</h4>
+                      <p className="font-ledger text-sm text-tintaSuave">
+                        {producto.codigoBarras && `Código: ${producto.codigoBarras} · `}
+                        {formatCurrency(producto.precioVenta)} · Stock: {producto.stock}{' '}
+                        {producto.unidad}
                       </p>
                     </div>
                     {producto.stock <= 10 && (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                        Stock bajo
-                      </span>
+                      <span className="sello sello-alerta shrink-0">Stock bajo</span>
                     )}
                   </div>
                 </button>
@@ -130,11 +139,10 @@ export const ProductSearch = ({ onProductSelect, onClose }: ProductSearchProps) 
           )}
         </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex justify-between text-sm text-gray-500">
+        <div className="border-t border-pauta bg-card px-4 py-3">
+          <div className="flex justify-between font-ledger text-xs text-tintaSuave">
             <span>{productos.length} productos encontrados</span>
-            <span>↑↓ para navegar • Enter para seleccionar • Esc para cerrar</span>
+            <span>↑↓ para navegar · Enter para seleccionar · Esc para cerrar</span>
           </div>
         </div>
       </div>

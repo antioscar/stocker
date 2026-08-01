@@ -23,7 +23,7 @@ export const Layout = () => {
 
   useEffect(() => {
     if (user) {
-      apiFetch('/caja/estado')
+      apiFetch<{ abierta: boolean }>('/caja/estado')
         .then((res) => {
           setCajaAbierta(res?.abierta || false);
         })
@@ -35,8 +35,8 @@ export const Layout = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-2 border-pauta border-b-oferta"></div>
       </div>
     );
   }
@@ -52,82 +52,79 @@ export const Layout = () => {
     navigate('/login', { replace: true });
   };
 
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `whitespace-nowrap px-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 -mb-[1px] ${
+      isActive
+        ? 'border-hoja text-hoja font-bold'
+        : 'border-transparent text-slate-500 hover:text-slate-950 hover:border-slate-300'
+    }`;
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">StockCaja</h1>
-              <p className="text-sm text-gray-600">Gestión de inventario y ventas</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              {cajaAbierta !== null && (
-                <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${
-                  cajaAbierta ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
-                  {cajaAbierta ? 'Caja Abierta' : 'Caja Cerrada'}
+    <div className="min-h-screen bg-papel">
+      <div className="sticky top-0 z-40 print:hidden shadow-sm">
+        <header className="bg-white border-b border-slate-200">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between gap-4 py-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center bg-hoja text-white font-bold rounded-md">
+                  <span className="text-sm font-bold">SC</span>
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-slate-900 leading-none">StockCaja</h1>
+                  <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider">Control de almacén</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 sm:gap-4">
+                {cajaAbierta !== null && (
+                  <span className={`sello hidden sm:inline-flex ${cajaAbierta ? 'sello-ok' : 'sello-alerta'}`}>
+                    {cajaAbierta ? '● Caja abierta' : '○ Caja cerrada'}
+                  </span>
+                )}
+                <span className="hidden text-xs text-slate-600 md:inline font-medium">
+                  Operador:{' '}
+                  <span className="font-semibold uppercase text-slate-900">{user.nombre}</span>
                 </span>
-              )}
-              <span className="text-sm text-gray-600">Hola, {user.nombre}</span>
-              <span
-                className={`px-2 py-1 text-xs rounded-full ${
-                  esAdmin ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                }`}
-              >
-                {user.rol}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="text-sm text-red-600 hover:text-red-800"
-              >
-                Cerrar sesión
-              </button>
+                <span
+                  className={`sello ${
+                    esAdmin
+                      ? 'border-rose-200 bg-rose-50 text-rose-700'
+                      : 'border-slate-200 bg-slate-50 text-slate-700'
+                  }`}
+                >
+                  {user.rol}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="border border-slate-200 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider text-slate-700 hover:bg-slate-50 transition-colors"
+                >
+                  Salir
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <nav className="bg-white border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8 overflow-x-auto">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === '/'}
-                className={({ isActive }) =>
-                  `py-4 px-1 border-b-2 whitespace-nowrap ${
-                    isActive
-                      ? 'border-blue-500 text-blue-600 font-medium'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-            {esAdmin &&
-              adminNavItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `py-4 px-1 border-b-2 whitespace-nowrap ${
-                      isActive
-                        ? 'border-blue-500 text-blue-600 font-medium'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`
-                  }
-                >
+        <nav className="bg-white border-b border-slate-200">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex gap-6 overflow-x-auto">
+              {navItems.map((item) => (
+                <NavLink key={item.to} to={item.to} end={item.to === '/'} className={navLinkClass}>
                   {item.label}
                 </NavLink>
               ))}
+              {esAdmin &&
+                adminNavItems.map((item) => (
+                  <NavLink key={item.to} to={item.to} className={navLinkClass}>
+                    {item.label}
+                  </NavLink>
+                ))}
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <Outlet />
       </main>
     </div>

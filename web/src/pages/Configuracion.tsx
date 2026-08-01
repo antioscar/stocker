@@ -66,13 +66,11 @@ export const Configuracion = () => {
     }
   };
 
-  const inputClass =
-    'w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent';
-
   if (!isAdmin) {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
-        No tiene permisos para modificar la configuración. Esta sección requiere rol ADMIN.
+      <div className="border-2 border-sello bg-sello/20 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-tinta">
+        Restringido: no tiene permisos para modificar la configuración. Esta sección requiere rol
+        ADMIN.
       </div>
     );
   }
@@ -82,34 +80,41 @@ export const Configuracion = () => {
     key: keyof ConfigNegocio,
     type = 'text',
     disabled = false,
-  ) => (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <input
-        type={type}
-        value={negocio[key]}
-        disabled={!editing || disabled}
-        onChange={(e) =>
-          setNegocio({
-            ...negocio,
-            [key]:
-              type === 'number'
-                ? Number(e.target.value)
-                : e.target.value,
-          })
-        }
-        className={`${inputClass} ${!editing ? 'bg-gray-50' : ''}`}
-      />
-    </div>
-  );
+  ) => {
+    const locked = !editing || disabled;
+    return (
+      <div>
+        <label className="etiqueta">{label}</label>
+        <input
+          type={type}
+          value={negocio[key]}
+          disabled={locked}
+          onChange={(e) =>
+            setNegocio({
+              ...negocio,
+              [key]:
+                type === 'number'
+                  ? Number(e.target.value)
+                  : e.target.value,
+            })
+          }
+          className={`input font-ledger ${locked ? 'cursor-not-allowed opacity-60' : ''}`}
+        />
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="ficha-pestana-grafito p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Configuración</h2>
-            <p className="text-sm text-gray-600">Datos del negocio y folio (solo ADMIN)</p>
+            <h2 className="font-display text-xl font-bold tracking-tight text-tinta">
+              Configuración
+            </h2>
+            <p className="mt-0.5 font-ledger text-xs uppercase tracking-sello text-tintaSuave">
+              Parámetros del negocio y correlativos
+            </p>
           </div>
           {!editing ? (
             <button
@@ -118,7 +123,7 @@ export const Configuracion = () => {
                 setError('');
                 setSuccess('');
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="btn btn-primario"
             >
               Editar
             </button>
@@ -131,53 +136,54 @@ export const Configuracion = () => {
                   setSuccess('');
                   fetchConfig();
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                className="btn btn-papel"
               >
                 Cancelar
               </button>
-              <button
-                type="submit"
-                form="config-form"
-                disabled={isSaving}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-              >
-                {isSaving ? 'Guardando...' : 'Guardar'}
+              <button type="submit" form="config-form" disabled={isSaving} className="btn btn-primario">
+                {isSaving ? 'Guardando…' : 'Guardar'}
               </button>
             </div>
           )}
         </div>
 
         {error && (
-          <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="mt-4 border-2 border-oferta bg-oferta/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-oferta">
             {error}
           </div>
         )}
         {success && (
-          <div className="mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          <div className="mt-4 border-2 border-hoja bg-hoja/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-hoja">
             {success}
           </div>
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="ficha p-6">
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+            <div className="h-10 w-10 animate-spin rounded-full border-2 border-pauta border-b-oferta"></div>
           </div>
         ) : (
-          <form id="config-form" onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Datos del negocio</h3>
+          <form id="config-form" onSubmit={handleSave} className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="border-b-2 border-pauta pb-2 md:col-span-2">
+              <h3 className="font-ledger text-sm font-bold uppercase tracking-sello text-tinta">
+                Datos del negocio
+              </h3>
             </div>
             {renderField('Nombre del negocio *', 'nombre')}
             {renderField('RUT', 'rut')}
             {renderField('Dirección', 'direccion')}
             {renderField('Teléfono', 'telefono')}
-            <div className="md:col-span-2">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Folio de ventas</h3>
+
+            <div className="mt-2 border-b-2 border-pauta pb-2 md:col-span-2">
+              <h3 className="font-ledger text-sm font-bold uppercase tracking-sello text-tinta">
+                Folio de ventas
+              </h3>
             </div>
             {renderField('Último folio correlativo', 'folioCorrelativo', 'number', true)}
-            <p className="md:col-span-2 text-sm text-gray-500">
+
+            <p className="font-ledger text-xs uppercase tracking-sello text-tintaSuave md:col-span-2">
               El folio se genera automáticamente en cada venta (formato BOL-####). El correlativo se
               administra de forma interna.
             </p>

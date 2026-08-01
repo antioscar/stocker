@@ -25,8 +25,7 @@ export const CajaModal = ({ mode, onClose, onSuccess, sessionData }: CajaModalPr
   const [montoApertura, setMontoApertura] = useState('');
   const [montoCierre, setMontoCierre] = useState('');
   const [observaciones, setObservaciones] = useState('');
-  
-  // Para registrar ingresos / egresos
+
   const [tipoMovimiento, setTipoMovimiento] = useState<'INGRESO' | 'EGRESO'>('INGRESO');
   const [montoMovimiento, setMontoMovimiento] = useState('');
   const [motivoMovimiento, setMotivoMovimiento] = useState('');
@@ -123,40 +122,41 @@ export const CajaModal = ({ mode, onClose, onSuccess, sessionData }: CajaModalPr
     }
   };
 
-  const inputClass =
-    'w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent';
+  const titulo =
+    mode === 'apertura'
+      ? 'Apertura de caja'
+      : mode === 'cierre'
+        ? 'Cierre de caja'
+        : 'Entrada / salida manual';
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden">
-        {/* Header */}
-        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-55">
-          <h3 className="text-lg font-bold text-gray-900">
-            {mode === 'apertura' && 'Apertura de Caja'}
-            {mode === 'cierre' && 'Cierre y Cuadratura de Caja'}
-            {mode === 'movimiento' && 'Registrar Entrada / Salida Manual'}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta/60 p-4 backdrop-blur-sm">
+      <div className="ficha-pestana-grafito w-full max-w-lg overflow-hidden">
+        <div className="flex select-none items-center justify-between border-b border-pauta px-5 py-4">
+          <h3 className="font-ledger text-sm font-bold uppercase tracking-sello text-tinta">
+            {titulo}
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-xl font-bold">
+          <button
+            onClick={onClose}
+            className="text-2xl font-bold leading-none text-tintaSuave transition-colors hover:text-oferta"
+          >
             ×
           </button>
         </div>
 
         {error && (
-          <div className="mx-4 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+          <div className="mx-5 mt-4 border-2 border-oferta bg-oferta/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-oferta">
             {error}
           </div>
         )}
 
-        {/* Apertura Mode */}
         {mode === 'apertura' && (
-          <form onSubmit={handleAperturaSubmit} className="p-6 space-y-4">
+          <form onSubmit={handleAperturaSubmit} className="space-y-4 p-6">
             <div>
-              <p className="text-sm text-gray-600 mb-3">
-                Para iniciar ventas en el sistema, debes declarar el saldo inicial de efectivo en la caja registradora (sencillo).
+              <p className="mb-3 font-ledger text-xs leading-relaxed text-tintaSuave">
+                Declare el saldo inicial de efectivo disponible en gaveta (sencillo/cambio).
               </p>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Efectivo de Apertura (CLP) *
-              </label>
+              <label className="etiqueta">Efectivo de apertura (CLP) *</label>
               <input
                 type="number"
                 min="0"
@@ -164,73 +164,62 @@ export const CajaModal = ({ mode, onClose, onSuccess, sessionData }: CajaModalPr
                 value={montoApertura}
                 onChange={(e) => setMontoApertura(e.target.value)}
                 placeholder="Ej: 10000"
-                className={inputClass}
+                className="input font-ledger"
                 autoFocus
               />
             </div>
-            <div className="flex justify-end space-x-2 pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-              >
+            <div className="flex justify-end space-x-3 pt-2">
+              <button type="button" onClick={onClose} className="btn btn-papel">
                 Cancelar
               </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50"
-              >
-                {isLoading ? 'Abriendo...' : 'Abrir Caja'}
+              <button type="submit" disabled={isLoading} className="btn btn-hoja">
+                {isLoading ? 'Abriendo…' : 'Abrir caja'}
               </button>
             </div>
           </form>
         )}
 
-        {/* Cierre Mode */}
         {mode === 'cierre' && sessionData && (
-          <form onSubmit={handleCierreSubmit} className="p-6 space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg space-y-2 border border-gray-100 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Apertura Inicial:</span>
-                <span className="font-medium">{formatCurrency(sessionData.montoApertura)}</span>
+          <form onSubmit={handleCierreSubmit} className="space-y-4 p-6">
+            <div className="select-none border-2 border-pauta bg-papelAlto p-4 font-ledger text-xs">
+              <div className="flex justify-between py-1">
+                <span className="text-tintaSuave">Apertura inicial:</span>
+                <span className="font-bold text-tinta">{formatCurrency(sessionData.montoApertura)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Ventas en Efectivo (+):</span>
-                <span className="font-medium text-green-600">{formatCurrency(sessionData.ventasEfectivo)}</span>
+              <div className="flex justify-between py-1">
+                <span className="text-tintaSuave">Ventas en efectivo (+):</span>
+                <span className="font-bold text-hoja">{formatCurrency(sessionData.ventasEfectivo)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Ingresos Manuales (+):</span>
-                <span className="font-medium text-green-600">{formatCurrency(sessionData.ingresosManuales)}</span>
+              <div className="flex justify-between py-1">
+                <span className="text-tintaSuave">Ingresos manuales (+):</span>
+                <span className="font-bold text-hoja">{formatCurrency(sessionData.ingresosManuales)}</span>
               </div>
-              <div className="flex justify-between pb-2 border-b">
-                <span className="text-gray-600">Egresos Manuales (-):</span>
-                <span className="font-medium text-red-600">{formatCurrency(sessionData.egresosManuales)}</span>
+              <div className="flex justify-between border-b border-pauta py-1">
+                <span className="text-tintaSuave">Egresos manuales (-):</span>
+                <span className="font-bold text-oferta">{formatCurrency(sessionData.egresosManuales)}</span>
               </div>
-              <div className="flex justify-between font-bold text-gray-800 pt-1">
-                <span>Efectivo Esperado en Caja:</span>
+              <div className="flex justify-between py-1.5 text-sm font-black text-tinta">
+                <span>Efectivo esperado en caja:</span>
                 <span>{formatCurrency(sessionData.efectivoEsperado)}</span>
               </div>
-              <div className="pt-2 border-t text-xs text-gray-500 space-y-1">
-                <div className="flex justify-between">
-                  <span>Ventas Tarjeta:</span>
+              <div className="space-y-0.5 border-t border-pauta pt-1.5 text-tintaTenue">
+                <div className="flex justify-between py-0.5">
+                  <span>Ventas tarjeta:</span>
                   <span>{formatCurrency(sessionData.ventasTarjeta)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Ventas Transferencia:</span>
+                <div className="flex justify-between py-0.5">
+                  <span>Ventas transferencia:</span>
                   <span>{formatCurrency(sessionData.ventasTransferencia)}</span>
                 </div>
-                <div className="flex justify-between font-medium">
-                  <span>Total Ventas Turno:</span>
+                <div className="flex justify-between py-0.5 font-bold text-tintaSuave">
+                  <span>Total ventas turno:</span>
                   <span>{formatCurrency(sessionData.totalVentas)}</span>
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Monto de Cierre Real Contado (CLP) *
-              </label>
+              <label className="etiqueta">Monto de cierre real contado (CLP) *</label>
               <input
                 type="number"
                 min="0"
@@ -238,96 +227,90 @@ export const CajaModal = ({ mode, onClose, onSuccess, sessionData }: CajaModalPr
                 value={montoCierre}
                 onChange={(e) => setMontoCierre(e.target.value)}
                 placeholder="Monto contado físicamente en caja"
-                className={inputClass}
+                className="input font-ledger"
                 autoFocus
               />
             </div>
 
             {montoCierre && (
-              <div className={`p-3 rounded text-sm font-semibold flex justify-between ${
-                parseFloat(montoCierre) - sessionData.efectivoEsperado === 0
-                  ? 'bg-green-50 text-green-700'
-                  : 'bg-yellow-50 text-yellow-700'
-              }`}>
-                <span>Discrepancia / Diferencia:</span>
-                <span>
-                  {formatCurrency(parseFloat(montoCierre) - sessionData.efectivoEsperado)}
-                  {parseFloat(montoCierre) - sessionData.efectivoEsperado === 0 && ' (Cuadrado)'}
-                  {parseFloat(montoCierre) - sessionData.efectivoEsperado > 0 && ' (Sobrante)'}
-                  {parseFloat(montoCierre) - sessionData.efectivoEsperado < 0 && ' (Faltante)'}
-                </span>
-              </div>
+              (() => {
+                const diff = parseFloat(montoCierre) - sessionData.efectivoEsperado;
+                return (
+                  <div
+                    className={`flex justify-between rounded-ficha border-2 px-3 py-2.5 font-ledger text-xs font-bold uppercase tracking-sello ${
+                      diff === 0
+                        ? 'border-hoja bg-hoja/10 text-hoja'
+                        : diff > 0
+                          ? 'border-sello bg-sello/20 text-tinta'
+                          : 'border-oferta bg-oferta/10 text-oferta'
+                    }`}
+                  >
+                    <span>Discrepancia / diferencia:</span>
+                    <span>
+                      {formatCurrency(diff)}
+                      {diff === 0 && ' (cuadrado)'}
+                      {diff > 0 && ' (sobrante)'}
+                      {diff < 0 && ' (faltante)'}
+                    </span>
+                  </div>
+                );
+              })()
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Observaciones (Opcional)
-              </label>
+              <label className="etiqueta">Observaciones (opcional)</label>
               <textarea
                 value={observaciones}
                 onChange={(e) => setObservaciones(e.target.value)}
-                placeholder="Ej: Diferencia por vuelto de $100 pesos, etc."
-                className={inputClass}
+                placeholder="Ej: Diferencia por vuelto de $100, etc."
+                className="input"
                 rows={2}
               />
             </div>
 
-            <div className="flex justify-end space-x-2 pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-              >
+            <div className="flex justify-end space-x-3 pt-2">
+              <button type="button" onClick={onClose} className="btn btn-papel">
                 Cancelar
               </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md disabled:opacity-50"
-              >
-                {isLoading ? 'Cerrando...' : 'Cerrar Turno y Caja'}
+              <button type="submit" disabled={isLoading} className="btn btn-primario">
+                {isLoading ? 'Cerrando…' : 'Cerrar turno'}
               </button>
             </div>
           </form>
         )}
 
-        {/* Movimiento Mode */}
         {mode === 'movimiento' && (
-          <form onSubmit={handleMovimientoSubmit} className="p-6 space-y-4">
+          <form onSubmit={handleMovimientoSubmit} className="space-y-4 p-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tipo de Transacción
-              </label>
-              <div className="flex space-x-4">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="tipoMovimiento"
-                    value="INGRESO"
-                    checked={tipoMovimiento === 'INGRESO'}
-                    onChange={() => setTipoMovimiento('INGRESO')}
-                    className="text-blue-600"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Ingreso (Sencillo/Cambio)</span>
-                </label>
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="tipoMovimiento"
-                    value="EGRESO"
-                    checked={tipoMovimiento === 'EGRESO'}
-                    onChange={() => setTipoMovimiento('EGRESO')}
-                    className="text-blue-600"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Egreso (Gastos/Proveedores)</span>
-                </label>
+              <label className="etiqueta">Tipo de transacción</label>
+              <div className="grid grid-cols-2 gap-2 select-none">
+                <button
+                  type="button"
+                  onClick={() => setTipoMovimiento('INGRESO')}
+                  className={`rounded-ficha border-2 px-3 py-2.5 font-ledger text-xs font-bold uppercase tracking-sello transition-colors ${
+                    tipoMovimiento === 'INGRESO'
+                      ? 'border-hoja bg-hoja/10 text-hoja'
+                      : 'border-pautaOscura bg-papelAlto text-tintaSuave hover:bg-card'
+                  }`}
+                >
+                  Ingreso (sencillo)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTipoMovimiento('EGRESO')}
+                  className={`rounded-ficha border-2 px-3 py-2.5 font-ledger text-xs font-bold uppercase tracking-sello transition-colors ${
+                    tipoMovimiento === 'EGRESO'
+                      ? 'border-oferta bg-oferta/10 text-oferta'
+                      : 'border-pautaOscura bg-papelAlto text-tintaSuave hover:bg-card'
+                  }`}
+                >
+                  Egreso (gasto)
+                </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Monto (CLP) *
-              </label>
+              <label className="etiqueta">Monto (CLP) *</label>
               <input
                 type="number"
                 min="1"
@@ -335,39 +318,29 @@ export const CajaModal = ({ mode, onClose, onSuccess, sessionData }: CajaModalPr
                 value={montoMovimiento}
                 onChange={(e) => setMontoMovimiento(e.target.value)}
                 placeholder="Ej: 5000"
-                className={inputClass}
+                className="input font-ledger"
                 autoFocus
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Motivo / Descripción *
-              </label>
+              <label className="etiqueta">Motivo / descripción *</label>
               <input
                 type="text"
                 required
                 value={motivoMovimiento}
                 onChange={(e) => setMotivoMovimiento(e.target.value)}
                 placeholder="Ej: Pago panadería local, compra cambio, etc."
-                className={inputClass}
+                className="input"
               />
             </div>
 
-            <div className="flex justify-end space-x-2 pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-              >
+            <div className="flex justify-end space-x-3 pt-2">
+              <button type="button" onClick={onClose} className="btn btn-papel">
                 Cancelar
               </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50"
-              >
-                {isLoading ? 'Registrando...' : 'Registrar Movimiento'}
+              <button type="submit" disabled={isLoading} className="btn btn-grafito">
+                {isLoading ? 'Registrando…' : 'Registrar movimiento'}
               </button>
             </div>
           </form>

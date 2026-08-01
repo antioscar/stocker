@@ -8,7 +8,7 @@ interface ApiError {
   message?: string;
 }
 
-export async function apiFetch<T = any>(path: string, options: RequestInit = {}): Promise<T> {
+export async function apiFetch<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
   const token = authService.getToken();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

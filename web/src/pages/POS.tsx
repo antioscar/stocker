@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../services/api';
 import { Cart } from '../components/Cart';
 import { CajaModal } from '../components/CajaModal';
@@ -20,6 +21,7 @@ interface CartItem {
 }
 
 export const POS = () => {
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState<string>('');
   const [metodoPago, setMetodoPago] = useState<string>('efectivo');
@@ -44,7 +46,7 @@ export const POS = () => {
   const checkCajaEstado = async () => {
     setIsCajaLoading(true);
     try {
-      const res = await apiFetch('/caja/estado');
+      const res = await apiFetch<any>('/caja/estado');
       if (res && res.abierta) {
         setCajaAbierta(true);
         setCajaSession(res.session);
@@ -89,26 +91,10 @@ export const POS = () => {
         setMetodoPago(methods[nextIndex]);
       }
 
-      // F3: Focus Client Input
-      if (e.key === 'F3') {
-        e.preventDefault();
-        const clientInput = document.getElementById('client-input') as HTMLInputElement;
-        clientInput?.focus();
-        clientInput?.select();
-      }
-
-      // F4: Focus Discount Input
-      if (e.key === 'F4') {
-        e.preventDefault();
-        const discountInput = document.getElementById('discount-input') as HTMLInputElement;
-        discountInput?.focus();
-        discountInput?.select();
-      }
-
       // F8: Empty Cart
       if (e.key === 'F8') {
         e.preventDefault();
-        if (confirm('¿Vaciar carrito de compras?')) {
+        if (confirm('¿Vaciar venta actual?')) {
           handleClearCart();
         }
       }
@@ -211,7 +197,6 @@ export const POS = () => {
       } else if (searchResults.length === 1) {
         handleProductSelect(searchResults[0]);
       } else if (searchResults.length > 1) {
-        // Selecciona el primero por defecto si se presiona Enter sin navegar
         handleProductSelect(searchResults[0]);
       }
     } else if (e.key === 'Escape') {
@@ -253,7 +238,7 @@ export const POS = () => {
 
   const handleCheckout = async () => {
     if (cartItems.length === 0) {
-      alert('El carrito está vacío');
+      alert('La venta no tiene productos');
       return;
     }
 
@@ -290,7 +275,8 @@ export const POS = () => {
         const result = await response.json();
         setLastSale(result);
         setCartItems([]);
-        checkCajaEstado(); // Refrescar totales de caja
+        checkCajaEstado();
+        alert(`Venta registrada con éxito. Folio: ${result.folio}`);
       } else {
         const error = await response.json();
         alert(`Error al procesar venta: ${error.error}`);
@@ -317,43 +303,39 @@ export const POS = () => {
   };
 
   const total = calcularTotal();
-  const neto = total / 1.19;
-  const iva = total - neto;
-
-  const handlePrint = () => {
-    window.print();
-  };
 
   if (isCajaLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center py-16">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-pauta border-b-hoja"></div>
       </div>
     );
   }
 
-  // Si la caja está cerrada, bloquear interfaz POS
   if (!cajaAbierta) {
     return (
-      <div className="max-w-md mx-auto mt-12 bg-white rounded-lg shadow-md border p-8 text-center space-y-6">
-        <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-600">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      <div className="mx-auto max-w-md py-12 text-center select-none">
+        <div className="ficha p-8 bg-white border border-slate-200 rounded-lg shadow-sm">
+          <svg className="w-16 h-16 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Caja Cerrada</h2>
+          <p className="text-sm text-slate-500 mb-6">Debe abrir la caja e ingresar el saldo inicial para poder comenzar a vender.</p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => setCajaModalMode('apertura')}
+              className="btn btn-primario w-full py-3"
+            >
+              Abrir Caja
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="btn btn-papel w-full py-3"
+            >
+              Volver al Sistema
+            </button>
+          </div>
         </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-gray-900">Caja Registradora Cerrada</h2>
-          <p className="text-gray-600">
-            Debes iniciar un nuevo turno abriendo la caja con un saldo inicial antes de poder registrar ventas.
-          </p>
-        </div>
-        <button
-          onClick={() => setCajaModalMode('apertura')}
-          className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-        >
-          Iniciar Turno / Abrir Caja
-        </button>
-
         {cajaModalMode === 'apertura' && (
           <CajaModal
             mode="apertura"
@@ -369,39 +351,40 @@ export const POS = () => {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Caja Info & Acciones */}
-      <div className="bg-white rounded-lg shadow-sm border p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
-        <div>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            🟢 Caja Abierta
-          </span>
-          <span className="text-sm text-gray-600 ml-3">
-            Efectivo esperado: <strong>{formatCurrency(cajaSession?.efectivoEsperado || 0)}</strong>
+    <div className="space-y-6 select-none">
+      {/* Información y Acciones de Caja */}
+      <div className="ficha p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-slate-200 rounded-lg shadow-sm">
+        <div className="flex items-center gap-3">
+          <span className="sello sello-ok">● Caja abierta</span>
+          <span className="text-sm text-slate-600 font-semibold">
+            Efectivo esperado: <span className="text-slate-900 font-bold">{formatCurrency(cajaSession?.efectivoEsperado || 0)}</span>
           </span>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2">
           <button
             onClick={() => setCajaModalMode('movimiento')}
-            className="px-3.5 py-2 text-xs font-semibold bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+            className="btn btn-papel text-xs font-semibold py-1.5 px-3"
           >
-            💰 Ingreso / Egreso Manual
+            Mover Dinero
           </button>
           <button
             onClick={() => setCajaModalMode('cierre')}
-            className="px-3.5 py-2 text-xs font-semibold bg-red-50 text-red-700 border border-red-200 rounded-md hover:bg-red-100 transition-colors"
+            className="btn btn-papel border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-semibold py-1.5 px-3"
           >
-            🔒 Cerrar Caja / Turno
+            Cerrar Turno
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full print:block">
-        {/* Product Search & Cart */}
-        <div className="lg:col-span-2 space-y-4 print:hidden">
-          {/* Persistent Search Header */}
-          <div className="bg-white rounded-lg shadow-sm border p-6 relative">
-            <h2 className="text-lg font-bold text-gray-900 mb-3">Registrar Producto</h2>
+      {/* Grid Principal 70% / 30% */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Panel Izquierdo: Buscador y Carrito (70%) */}
+        <div className="lg:col-span-2 space-y-4">
+          
+          {/* Campo de búsqueda */}
+          <div className="ficha p-5 bg-white border border-slate-200 rounded-lg shadow-sm relative">
+            <label className="etiqueta mb-2 block">Registrar Producto (F1)</label>
             <div className="relative">
               <input
                 ref={searchInputRef}
@@ -409,42 +392,37 @@ export const POS = () => {
                 value={searchVal}
                 onChange={handleSearchChange}
                 onKeyDown={handleSearchKeyDown}
-                placeholder="Escanea el código de barras o escribe el nombre del producto..."
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                placeholder="Escanee el código de barras o escriba el nombre del producto..."
+                className="input py-3 text-base"
                 autoFocus
               />
-              <div className="absolute left-3 top-3.5 text-gray-400">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
             </div>
 
             {/* Búsqueda rápida dropdown */}
             {searchVal.trim() && (
-              <div className="absolute left-6 right-6 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+              <div className="absolute left-5 right-5 mt-1 bg-white border border-slate-200 shadow-lg z-50 max-h-60 overflow-y-auto rounded-md divide-y divide-slate-100">
                 {isSearching ? (
-                  <div className="p-4 text-center text-gray-500 text-sm">Buscando...</div>
+                  <div className="p-4 text-center text-slate-400 text-sm">Buscando...</div>
                 ) : searchResults.length === 0 ? (
-                  <div className="p-4 text-center text-gray-500 text-sm">No se encontraron productos</div>
+                  <div className="p-4 text-center text-slate-400 text-sm">No se encontraron productos</div>
                 ) : (
                   searchResults.map((producto, idx) => (
                     <button
                       key={producto.id}
                       onClick={() => handleProductSelect(producto)}
-                      className={`w-full p-3 text-left border-b hover:bg-blue-50 flex justify-between items-center text-sm ${
-                        idx === searchSelectedIndex ? 'bg-blue-50 font-semibold' : ''
+                      className={`w-full p-3 text-left hover:bg-slate-50 flex justify-between items-center text-sm transition-colors ${
+                        idx === searchSelectedIndex ? 'bg-slate-50 text-slate-900 font-semibold' : 'text-slate-600'
                       }`}
                     >
                       <div>
-                        <span className="text-gray-900 font-medium">{producto.nombre}</span>
+                        <span className="font-semibold">{producto.nombre}</span>
                         {producto.codigoBarras && (
-                          <span className="text-gray-500 text-xs ml-2">({producto.codigoBarras})</span>
+                          <span className="text-slate-400 text-xs ml-2">({producto.codigoBarras})</span>
                         )}
                       </div>
                       <div className="text-right">
-                        <span className="text-gray-900 font-bold">{formatCurrency(producto.precioVenta)}</span>
-                        <span className="text-xs text-gray-500 block">Stock: {producto.stock} {producto.unidad}</span>
+                        <span className="font-bold">{formatCurrency(producto.precioVenta)}</span>
+                        <span className="text-[10px] text-slate-400 block mt-0.5">Stock: {producto.stock} {producto.unidad}</span>
                       </div>
                     </button>
                   ))
@@ -453,173 +431,85 @@ export const POS = () => {
             )}
           </div>
 
-          {/* Cart */}
+          {/* Listado del Carrito */}
           <Cart
             items={cartItems}
             onUpdateItem={handleUpdateItem}
             onRemoveItem={handleRemoveItem}
-            onClearCart={handleClearCart}
-            onCheckout={handleCheckout}
           />
         </div>
 
-        {/* Checkout Panel */}
-        <div className="space-y-4 print:w-full print:max-w-md print:mx-auto">
-          {/* Keyboard Shortcuts Helper Bar */}
-          <div className="bg-gray-800 text-white rounded-lg p-4 text-xs font-mono space-y-1.5 print:hidden shadow-sm">
-            <h4 className="font-semibold text-gray-300 uppercase tracking-wider text-xxs mb-1">Teclado Rápido POS</h4>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
-              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F1]</kbd> Buscar Producto</div>
-              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F2]</kbd> Medio de Pago</div>
-              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F3]</kbd> Cliente</div>
-              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F4]</kbd> Descuento</div>
-              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F8]</kbd> Vaciar carro</div>
-              <div><kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F12]</kbd> Cobrar (Ctrl+Enter)</div>
+        {/* Panel Derecho: Totales y Acciones (30%) */}
+        <div className="space-y-4">
+          
+          {/* Caja del Total */}
+          <div className="ficha p-6 bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col items-center justify-center text-center">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total a Pagar</span>
+            <div className="text-5xl font-black text-slate-900 tracking-tight">
+              {formatCurrency(total)}
             </div>
-            {lastSale && (
-              <div className="pt-1.5 border-t border-gray-700 mt-1">
-                <kbd className="bg-gray-700 px-1 py-0.5 rounded text-white font-bold">[F9]</kbd> Imprimir ticket
-              </div>
-            )}
           </div>
 
-          {/* Client Selection */}
-          <div className="bg-white rounded-lg shadow-sm border p-6 print:hidden">
-            <h3 className="text-base font-bold text-gray-900 mb-3">Cliente</h3>
+          {/* Formulario de Cliente y Descuento */}
+          <div className="ficha p-5 bg-white border border-slate-200 rounded-lg shadow-sm space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Nombre del Cliente (Opcional)</label>
+              <label className="etiqueta">Cliente (Opcional)</label>
               <input
-                id="client-input"
                 type="text"
                 value={clienteSeleccionado}
                 onChange={(e) => setClienteSeleccionado(e.target.value)}
-                placeholder="Ej: Consumidor Final / Nombre"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                placeholder="Consumidor Final"
+                className="input"
+              />
+            </div>
+            <div>
+              <label className="etiqueta">Descuento %</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={descuento}
+                onChange={(e) => setDescuento(Number(e.target.value))}
+                className="input"
               />
             </div>
           </div>
 
-          {/* Payment Options */}
-          <div className="bg-white rounded-lg shadow-sm border p-6 print:hidden">
-            <h3 className="text-base font-bold text-gray-900 mb-3">Método de Pago</h3>
+          {/* Métodos de Pago */}
+          <div className="ficha p-5 bg-white border border-slate-200 rounded-lg shadow-sm space-y-3">
+            <label className="etiqueta">Método de Pago</label>
             <div className="grid grid-cols-3 gap-2">
               {['efectivo', 'tarjeta', 'transferencia'].map((metodo) => (
                 <button
                   key={metodo}
                   type="button"
                   onClick={() => setMetodoPago(metodo)}
-                  className={`py-2 px-3 text-xs font-semibold rounded-md border text-center transition-colors ${
+                  className={`py-2 rounded-md font-bold text-xs uppercase transition-colors border ${
                     metodoPago === metodo
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      ? 'bg-hoja text-white border-hoja'
+                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  {metodo.charAt(0).toUpperCase() + metodo.slice(1)}
+                  {metodo}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Discount */}
-          <div className="bg-white rounded-lg shadow-sm border p-6 print:hidden">
-            <h3 className="text-base font-bold text-gray-900 mb-3">Descuento</h3>
-            <div className="flex gap-2 items-center">
-              <input
-                id="discount-input"
-                type="number"
-                min="0"
-                max="100"
-                value={descuento}
-                onChange={(e) => setDescuento(Number(e.target.value))}
-                placeholder="0%"
-                className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-sm"
-              />
-              <span className="text-xs text-gray-500 font-semibold">% de Descuento</span>
-            </div>
-          </div>
-
-          {/* Ticket Preview (Optimizado para impresión térmica) */}
-          <div className="bg-white rounded-lg shadow-sm border p-6 print:border-none print:shadow-none print:p-0">
-            <div className="flex justify-between items-center mb-4 print:hidden">
-              <h3 className="text-base font-bold text-gray-900">Previa de Ticket</h3>
-              {lastSale && (
-                <button
-                  onClick={handlePrint}
-                  className="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded hover:bg-green-700"
-                >
-                  🖨️ Imprimir Ticket
-                </button>
-              )}
-            </div>
-
-            <div className="border border-gray-300 rounded p-4 bg-gray-50 font-mono text-xs print:bg-white print:border-none print:p-0">
-              <div className="text-center font-bold border-b border-dashed border-gray-400 pb-2 mb-2">
-                <span className="text-sm block">STOCKCAJA</span>
-                <span className="text-xxs font-normal">Boleta de Venta Interna</span>
-              </div>
-              <div className="space-y-1 mb-2 text-xxs">
-                <div><strong>Folio:</strong> {lastSale ? lastSale.folio : 'BOL-XXXX'}</div>
-                <div><strong>Fecha:</strong> {new Date().toLocaleDateString()}</div>
-                <div><strong>Hora:</strong> {new Date().toLocaleTimeString()}</div>
-                <div><strong>Cajero:</strong> {lastSale?.usuario?.nombre || 'Administrador'}</div>
-              </div>
-              
-              <div className="border-t border-dashed border-gray-400 pt-2 mb-2">
-                {/* Items */}
-                {cartItems.length === 0 && !lastSale && (
-                  <div className="text-center py-2 text-gray-400 text-xxs">Sin productos cargados</div>
-                )}
-                {cartItems.map((item, idx) => (
-                  <div key={idx} className="flex justify-between mb-1">
-                    <span>{item.cantidad}x {item.producto.nombre.substring(0, 18)}</span>
-                    <span>{formatCurrency(item.subtotal)}</span>
-                  </div>
-                ))}
-                {lastSale && lastSale.ventaDetalle?.map((item: any, idx: number) => (
-                  <div key={idx} className="flex justify-between mb-1">
-                    <span>{item.cantidad}x {item.producto.nombre.substring(0, 18)}</span>
-                    <span>{formatCurrency(item.subtotal)}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-dashed border-gray-400 pt-2 text-xxs space-y-1">
-                <div className="flex justify-between font-bold">
-                  <span>Neto:</span>
-                  <span>{formatCurrency(lastSale ? lastSale.total / 1.19 : neto)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>IVA (19%):</span>
-                  <span>{formatCurrency(lastSale ? lastSale.total - (lastSale.total / 1.19) : iva)}</span>
-                </div>
-                {descuento > 0 && (
-                  <div className="flex justify-between text-red-600">
-                    <span>Descuento ({descuento}%):</span>
-                    <span>-{formatCurrency(calcularSubtotal() * descuento / 100)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between font-bold text-sm border-t border-double border-gray-400 pt-2 mt-1">
-                  <span>TOTAL:</span>
-                  <span>{formatCurrency(lastSale ? lastSale.total : total)}</span>
-                </div>
-              </div>
-              
-              <div className="text-center text-xxs text-gray-500 border-t border-dashed border-gray-400 pt-2 mt-3">
-                Gracias por su compra
-              </div>
-            </div>
-          </div>
-
-          {/* Processing Indicator */}
-          {isProcessing && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 print:hidden">
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-                <span className="text-sm text-blue-800">Procesando venta...</span>
-              </div>
-            </div>
-          )}
+          {/* Botón de Finalizar */}
+          <button
+            onClick={handleCheckout}
+            disabled={isProcessing || cartItems.length === 0}
+            className={`w-full py-4 rounded-md text-white font-bold text-lg uppercase tracking-wider shadow-sm transition-all ${
+              isProcessing || cartItems.length === 0
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                : 'bg-hoja hover:bg-hojaOscuro hover:shadow active:scale-[0.99]'
+            }`}
+          >
+            {isProcessing ? 'Procesando...' : 'Finalizar Venta (F12)'}
+          </button>
         </div>
+
       </div>
 
       {/* Modales de Caja */}
@@ -634,26 +524,6 @@ export const POS = () => {
           sessionData={cajaSession}
         />
       )}
-
-      {/* Ticket Print Specific CSS */}
-      <style>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          .print\\:block, .print\\:block * {
-            visibility: visible;
-          }
-          .print\\:block {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 80mm;
-            margin: 0;
-            padding: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 };

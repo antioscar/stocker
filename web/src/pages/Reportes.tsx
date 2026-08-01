@@ -48,38 +48,30 @@ export const Reportes = () => {
     : 0;
 
   return (
-    <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6">
+      <div className="ficha-pestana-sello p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Reportes</h2>
-            <p className="text-sm text-gray-600">Resumen de ventas e indicadores del negocio</p>
+            <h2 className="font-display text-xl font-bold tracking-tight text-tinta">Reportes</h2>
+            <p className="mt-0.5 font-ledger text-xs uppercase tracking-sello text-tintaSuave">
+              Indicadores financieros y de inventario del negocio
+            </p>
           </div>
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-2.5">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Desde</label>
-              <input
-                type="date"
-                value={desde}
-                onChange={(e) => setDesde(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <label className="etiqueta">Desde</label>
+              <input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} className="input" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Hasta</label>
-              <input
-                type="date"
-                value={hasta}
-                onChange={(e) => setHasta(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <label className="etiqueta">Hasta</label>
+              <input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} className="input" />
             </div>
             <button
               onClick={() => {
                 setDesde('');
                 setHasta('');
               }}
-              className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm hover:bg-gray-50"
+              className="btn btn-papel"
             >
               Limpiar
             </button>
@@ -87,7 +79,7 @@ export const Reportes = () => {
         </div>
 
         {error && (
-          <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="mt-4 border-2 border-oferta bg-oferta/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-oferta">
             {error}
           </div>
         )}
@@ -95,67 +87,101 @@ export const Reportes = () => {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-pauta border-b-oferta"></div>
         </div>
       ) : !data ? (
-        <div className="text-center py-16 text-gray-500">No hay datos disponibles</div>
+        <div className="py-16 text-center font-ledger text-xs uppercase tracking-sello text-tintaTenue">
+          No hay datos disponibles
+        </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-              <p className="text-sm text-gray-600 font-semibold">Ventas totales</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">{data.resumen.totalVentas}</p>
-              <p className="text-xs text-gray-500 mt-1">tickets registrados</p>
+          <div className="grid grid-cols-1 gap-4 select-none sm:grid-cols-2 lg:grid-cols-5">
+            <div className="ficha p-5">
+              <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+                Ventas totales
+              </p>
+              <p className="mt-1.5 font-ledger text-2xl font-bold text-tinta">
+                {data.resumen.totalVentas}
+              </p>
+              <p className="mt-1 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+                tickets registrados
+              </p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-              <p className="text-sm text-gray-600 font-semibold">Ingresos</p>
-              <p className="text-2xl font-bold text-green-600 mt-1">
+
+            <div className="ficha p-5">
+              <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+                Ingresos
+              </p>
+              <p className="mt-1.5 font-ledger text-2xl font-bold text-hoja">
                 {formatCurrency(data.resumen.totalIngresos)}
               </p>
-              <p className="text-xs text-gray-500 mt-1">ventas válidas</p>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-              <p className="text-sm text-gray-600 font-semibold">Costo Total</p>
-              <p className="text-2xl font-bold text-orange-600 mt-1">
-                {formatCurrency((data.resumen as any).totalCosto || 0)}
+              <p className="mt-1 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+                ventas válidas
               </p>
-              <p className="text-xs text-gray-500 mt-1">costo de mercadería</p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-              <p className="text-sm text-gray-600 font-semibold">Utilidad Bruta</p>
-              <p className="text-2xl font-bold text-blue-600 mt-1">
-                {formatCurrency((data.resumen as any).utilidadBruta || 0)}
+
+            <div className="ficha p-5">
+              <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+                Costo total
               </p>
-              <p className="text-xs text-gray-500 mt-1">ganancia neta estimada</p>
+              <p className="mt-1.5 font-ledger text-2xl font-bold text-tintaSuave">
+                {formatCurrency(data.resumen.totalCosto ?? 0)}
+              </p>
+              <p className="mt-1 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+                costo de mercadería
+              </p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-              <p className="text-sm text-gray-600 font-semibold">Ventas anuladas</p>
-              <p className="text-2xl font-bold text-red-600 mt-1">{data.resumen.totalAnuladas}</p>
-              <p className="text-xs text-gray-500 mt-1">anulaciones de tickets</p>
+
+            <div className="ficha p-5">
+              <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+                Utilidad bruta
+              </p>
+              <p className="mt-1.5 font-ledger text-2xl font-bold text-hoja">
+                {formatCurrency(data.resumen.utilidadBruta ?? 0)}
+              </p>
+              <p className="mt-1 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+                ganancia bruta estimada
+              </p>
+            </div>
+
+            <div className="ficha p-5">
+              <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+                Ventas anuladas
+              </p>
+              <p className="mt-1.5 font-ledger text-2xl font-bold text-oferta">
+                {data.resumen.totalAnuladas}
+              </p>
+              <p className="mt-1 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+                anulaciones de tickets
+              </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Ventas por día</h3>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="ficha p-6">
+              <h3 className="font-ledger text-xs font-bold uppercase tracking-sello text-tintaSuave">
+                Ventas por día
+              </h3>
               {ventasPorDia.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">Sin ventas en el período</div>
+                <div className="py-12 text-center font-ledger text-xs uppercase tracking-sello text-tintaTenue">
+                  Sin ventas en el período
+                </div>
               ) : (
-                <div className="space-y-2">
+                <div className="mt-4 space-y-3.5">
                   {ventasPorDia.map(([fecha, value]) => (
                     <div key={fecha} className="flex items-center gap-3">
-                      <span className="w-24 text-sm text-gray-600">
+                      <span className="w-24 font-ledger text-xxs font-bold uppercase text-tintaSuave">
                         {new Date(fecha).toLocaleDateString('es-CL')}
                       </span>
-                      <div className="flex-1 bg-gray-100 rounded h-6 overflow-hidden">
+                      <div className="h-5 flex-1 overflow-hidden rounded-ficha border border-pautaOscura bg-pauta/40">
                         <div
-                          className="bg-blue-500 h-6"
+                          className="h-full bg-hoja transition-all duration-500"
                           style={{
                             width: `${maxVentaDiaria > 0 ? (value.total / maxVentaDiaria) * 100 : 0}%`,
                           }}
                         ></div>
                       </div>
-                      <span className="w-24 text-right text-sm font-medium text-gray-900">
+                      <span className="w-24 text-right font-ledger text-xs font-bold text-tinta">
                         {formatCurrency(value.total)}
                       </span>
                     </div>
@@ -164,29 +190,33 @@ export const Reportes = () => {
               )}
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Productos más vendidos</h3>
+            <div className="ficha p-6">
+              <h3 className="font-ledger text-xs font-bold uppercase tracking-sello text-tintaSuave">
+                Productos más vendidos
+              </h3>
               {data.productosMasVendidos.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">Sin ventas en el período</div>
+                <div className="py-12 text-center font-ledger text-xs uppercase tracking-sello text-tintaTenue">
+                  Sin ventas en el período
+                </div>
               ) : (
-                <div className="space-y-3">
+                <div className="mt-4 space-y-3">
                   {data.productosMasVendidos.map((producto, index) => (
                     <div
                       key={producto.productoId}
-                      className="flex items-center justify-between border-b border-gray-100 pb-2"
+                      className="flex items-center justify-between rounded-ficha border border-pauta px-3 py-2 transition-colors hover:bg-papelAlto"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold flex items-center justify-center">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-ficha border border-pautaOscura bg-papelAlto font-ledger text-xs font-bold text-tinta">
                           {index + 1}
                         </span>
                         <div>
-                          <p className="font-medium text-gray-900">{producto.nombre}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="font-medium text-tinta">{producto.nombre}</p>
+                          <p className="font-ledger text-xs text-tintaSuave">
                             {producto.cantidadVendida} unidades
                           </p>
                         </div>
                       </div>
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="font-ledger text-sm font-bold text-tinta">
                         {formatCurrency(producto.ingresos)}
                       </span>
                     </div>
@@ -196,51 +226,45 @@ export const Reportes = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Alertas de stock bajo</h3>
+          <div className="ficha p-6">
+            <h3 className="font-ledger text-xs font-bold uppercase tracking-sello text-tintaSuave">
+              Alertas de stock bajo
+            </h3>
             {data.stockBajo.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="py-8 text-center font-ledger text-xs uppercase tracking-sello text-tintaTenue">
                 No hay productos con stock bajo
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+              <div className="mt-4 overflow-x-auto">
+                <table className="tabla min-w-full">
+                  <thead>
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Producto
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Categoría
-                      </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Stock actual
-                      </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Stock mínimo
-                      </th>
+                      <th>Producto</th>
+                      <th>Categoría</th>
+                      <th className="text-right">Stock actual</th>
+                      <th className="text-right">Stock mínimo</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody>
                     {data.stockBajo.map((producto) => (
-                      <tr key={producto.id} className="hover:bg-gray-50">
+                      <tr key={producto.id}>
                         <td className="px-4 py-3">
-                          <p className="font-medium text-gray-900">{producto.nombre}</p>
+                          <p className="font-medium text-tinta">{producto.nombre}</p>
                           {producto.codigoBarras && (
-                            <p className="text-xs text-gray-500">
-                              Código: {producto.codigoBarras}
+                            <p className="mt-0.5 font-ledger text-xs text-tintaTenue">
+                              Cód: {producto.codigoBarras}
                             </p>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
+                        <td className="px-4 py-3 text-tintaSuave">
                           {producto.categoria?.nombre ?? '-'}
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                          <span className="sello sello-alerta">
                             {producto.stock} {producto.unidad ?? 'unid'}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right text-sm text-gray-600">
+                        <td className="px-4 py-3 text-right font-ledger font-bold text-tintaSuave">
                           {producto.stockMinimo}
                         </td>
                       </tr>

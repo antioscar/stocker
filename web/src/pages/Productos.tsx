@@ -19,28 +19,26 @@ const emptyForm: ProductoForm = {
   categoriaId: 0,
   precioVenta: '',
   precioCosto: '',
-  stock: '0',
-  stockMinimo: '0',
+  stock: '',
+  stockMinimo: '',
   unidad: 'unidad',
 };
 
 export const Productos = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<ProductoForm>(emptyForm);
+  const [search, setSearch] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const fetchProductos = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await apiFetch<Producto[]>(
-        `/productos${search ? `?search=${encodeURIComponent(search)}` : ''}`,
-      );
+      const data = await apiFetch<Producto[]>(`/productos?search=${encodeURIComponent(search)}`);
       setProductos(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error al cargar productos');
@@ -54,7 +52,7 @@ export const Productos = () => {
       const data = await apiFetch<Categoria[]>('/categorias');
       setCategorias(data);
     } catch {
-      // si falla, se ignora
+      setCategorias([]);
     }
   }, []);
 
@@ -68,10 +66,7 @@ export const Productos = () => {
 
   const openCreate = () => {
     setEditingId(null);
-    setForm({
-      ...emptyForm,
-      categoriaId: categorias[0]?.id ?? 0,
-    });
+    setForm(emptyForm);
     setError('');
     setModalOpen(true);
   };
@@ -149,21 +144,20 @@ export const Productos = () => {
       minimumFractionDigits: 0,
     }).format(amount);
 
-  const inputClass =
-    'w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent';
+  const selectClass =
+    'select [&>option]:bg-papelAlto [&>option]:text-tinta';
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="ficha-pestana-grafito p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Productos</h2>
-            <p className="text-sm text-gray-600">Gestión de inventario y precios</p>
+            <h2 className="font-display text-xl font-bold tracking-tight text-tinta">Productos</h2>
+            <p className="mt-0.5 font-ledger text-xs uppercase tracking-sello text-tintaSuave">
+              Control de inventario y costos del negocio
+            </p>
           </div>
-          <button
-            onClick={openCreate}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
+          <button onClick={openCreate} className="btn btn-primario">
             + Nuevo producto
           </button>
         </div>
@@ -174,109 +168,89 @@ export const Productos = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nombre o código de barras..."
-            className="w-full sm:w-80 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input sm:w-80"
           />
         </div>
 
         {error && (
-          <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="mt-4 border-2 border-oferta bg-oferta/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-oferta">
             {error}
           </div>
         )}
         {success && (
-          <div className="mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          <div className="mt-4 border-2 border-hoja bg-hoja/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-hoja">
             {success}
           </div>
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="ficha overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+            <div className="h-10 w-10 animate-spin rounded-full border-2 border-pauta border-b-oferta"></div>
           </div>
         ) : productos.length === 0 ? (
-          <div className="text-center py-16 text-gray-500">
+          <div className="py-16 text-center font-ledger text-xs uppercase tracking-sello text-tintaTenue">
             No hay productos registrados
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="tabla min-w-full">
+              <thead>
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Producto
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Categoría
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Precio venta
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Costo
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stock
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
+                  <th>Producto</th>
+                  <th>Categoría</th>
+                  <th className="text-right">Precio venta</th>
+                  <th className="text-right">Costo</th>
+                  <th className="text-right">Stock</th>
+                  <th className="text-center">Estado</th>
+                  <th className="text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody>
                 {productos.map((producto) => (
-                  <tr key={producto.id} className="hover:bg-gray-50">
+                  <tr key={producto.id}>
                     <td className="px-4 py-3">
-                      <p className="font-medium text-gray-900">{producto.nombre}</p>
+                      <p className="font-medium text-tinta">{producto.nombre}</p>
                       {producto.codigoBarras && (
-                        <p className="text-xs text-gray-500">Código: {producto.codigoBarras}</p>
+                        <p className="mt-0.5 font-ledger text-xs text-tintaTenue">
+                          Cód: {producto.codigoBarras}
+                        </p>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-tintaSuave">
                       {producto.categoria?.nombre ?? '-'}
                     </td>
-                    <td className="px-4 py-3 text-right text-sm font-medium text-gray-900">
+                    <td className="px-4 py-3 text-right font-ledger font-bold text-tinta">
                       {formatCurrency(producto.precioVenta)}
                     </td>
-                    <td className="px-4 py-3 text-right text-sm text-gray-600">
+                    <td className="px-4 py-3 text-right font-ledger text-tintaSuave">
                       {formatCurrency(producto.precioCosto)}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          producto.stock <= producto.stockMinimo
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-gray-100 text-gray-800'
+                        className={`sello ${
+                          producto.stock <= producto.stockMinimo ? 'sello-alerta' : 'sello-gris'
                         }`}
                       >
-                        {producto.stock} {producto.unidad}
+                        {producto.stock} {producto.unidad.toUpperCase()}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          producto.activo
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-200 text-gray-600'
-                        }`}
-                      >
+                      <span className={`sello ${producto.activo ? 'sello-ok' : 'sello-gris'}`}>
                         {producto.activo ? 'Activo' : 'Inactivo'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right space-x-2">
+                    <td className="space-x-3 px-4 py-3 text-right">
                       <button
                         onClick={() => openEdit(producto)}
-                        className="text-blue-600 hover:text-blue-800 text-sm"
+                        className="font-ledger text-xs font-bold uppercase tracking-sello text-tintaSuave transition-colors hover:text-tinta"
                       >
                         Editar
                       </button>
                       <button
                         onClick={() => handleDelete(producto.id)}
-                        className="text-red-600 hover:text-red-800 text-sm"
+                        className="font-ledger text-xs font-bold uppercase tracking-sello text-oferta transition-colors hover:underline"
                       >
                         Eliminar
                       </button>
@@ -290,50 +264,48 @@ export const Productos = () => {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta/60 p-4 backdrop-blur-sm">
+          <div className="ficha-pestana w-full max-w-lg overflow-hidden">
+            <div className="flex select-none items-center justify-between border-b border-pauta px-5 py-4">
+              <h3 className="font-ledger text-sm font-bold uppercase tracking-sello text-tinta">
                 {editingId ? 'Editar producto' : 'Nuevo producto'}
               </h3>
               <button
                 onClick={() => setModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700 text-xl"
+                className="text-2xl font-bold leading-none text-tintaSuave transition-colors hover:text-oferta"
               >
                 ×
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-4 space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-4 p-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+                <label className="etiqueta">Nombre *</label>
                 <input
                   type="text"
                   required
                   value={form.nombre}
                   onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                  className={inputClass}
+                  className="input"
                   placeholder="Ej: Coca Cola 1L"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Código de barras
-                  </label>
+                  <label className="etiqueta">Código de barras</label>
                   <input
                     type="text"
                     value={form.codigoBarras}
                     onChange={(e) => setForm({ ...form, codigoBarras: e.target.value })}
-                    className={inputClass}
+                    className="input"
                     placeholder="7800000000000"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+                  <label className="etiqueta">Categoría *</label>
                   <select
                     value={form.categoriaId}
                     onChange={(e) => setForm({ ...form, categoriaId: Number(e.target.value) })}
-                    className={inputClass}
+                    className={selectClass}
                   >
                     <option value={0}>Seleccionar...</option>
                     {categorias.map((c) => (
@@ -346,9 +318,7 @@ export const Productos = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Precio venta * ({form.precioVenta ? 'CLP' : 'CLP'})
-                  </label>
+                  <label className="etiqueta">Precio venta * (CLP)</label>
                   <input
                     type="number"
                     min="0"
@@ -356,14 +326,12 @@ export const Productos = () => {
                     required
                     value={form.precioVenta}
                     onChange={(e) => setForm({ ...form, precioVenta: e.target.value })}
-                    className={inputClass}
+                    className="input font-ledger"
                     placeholder="1500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Precio costo *
-                  </label>
+                  <label className="etiqueta">Precio costo *</label>
                   <input
                     type="number"
                     min="0"
@@ -371,40 +339,38 @@ export const Productos = () => {
                     required
                     value={form.precioCosto}
                     onChange={(e) => setForm({ ...form, precioCosto: e.target.value })}
-                    className={inputClass}
+                    className="input font-ledger"
                     placeholder="1100"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                  <label className="etiqueta">Stock</label>
                   <input
                     type="number"
                     min="0"
                     value={form.stock}
                     onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                    className={inputClass}
+                    className="input font-ledger"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Stock mínimo
-                  </label>
+                  <label className="etiqueta">Stock mínimo</label>
                   <input
                     type="number"
                     min="0"
                     value={form.stockMinimo}
                     onChange={(e) => setForm({ ...form, stockMinimo: e.target.value })}
-                    className={inputClass}
+                    className="input font-ledger"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
+                  <label className="etiqueta">Unidad</label>
                   <select
                     value={form.unidad}
                     onChange={(e) => setForm({ ...form, unidad: e.target.value })}
-                    className={inputClass}
+                    className={selectClass}
                   >
                     <option value="unidad">unidad</option>
                     <option value="kg">kg</option>
@@ -413,18 +379,11 @@ export const Productos = () => {
                   </select>
                 </div>
               </div>
-              <div className="flex justify-end space-x-2 pt-3">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-                >
+              <div className="flex justify-end space-x-3 pt-3">
+                <button type="button" onClick={() => setModalOpen(false)} className="btn btn-papel">
                   Cancelar
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
+                <button type="submit" className="btn btn-primario">
                   {editingId ? 'Guardar cambios' : 'Crear producto'}
                 </button>
               </div>

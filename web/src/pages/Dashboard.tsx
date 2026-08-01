@@ -39,24 +39,54 @@ export const Dashboard = () => {
       minimumFractionDigits: 0,
     }).format(amount);
 
+  const fechaHoy = () =>
+    new Date().toLocaleDateString('es-CL', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+
   const accesosRapidos = [
-    { titulo: 'Punto de Venta', descripcion: 'Registrar una venta', to: '/ventas', color: 'bg-blue-600 hover:bg-blue-700' },
-    { titulo: 'Productos', descripcion: 'Inventario y precios', to: '/productos', color: 'bg-green-600 hover:bg-green-700' },
-    { titulo: 'Clientes', descripcion: 'Registro de clientes', to: '/clientes', color: 'bg-purple-600 hover:bg-purple-700' },
-    { titulo: 'Reportes', descripcion: 'Indicadores del negocio', to: '/reportes', color: 'bg-amber-600 hover:bg-amber-700' },
+    {
+      titulo: 'Punto de venta',
+      descripcion: 'Abrir caja y registrar ventas',
+      to: '/ventas',
+      ficha: 'ficha-pestana',
+    },
+    {
+      titulo: 'Productos',
+      descripcion: 'Verificar stock y precios',
+      to: '/productos',
+      ficha: 'ficha-pestana-hoja',
+    },
+    {
+      titulo: 'Clientes',
+      descripcion: 'Fichas e historiales',
+      to: '/clientes',
+      ficha: 'ficha-pestana-grafito',
+    },
+    {
+      titulo: 'Reportes',
+      descripcion: 'Estadísticas del negocio',
+      to: '/reportes',
+      ficha: 'ficha-pestana-sello',
+    },
   ];
 
   const esAdmin = user?.rol === 'ADMIN';
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Hola, {user?.nombre ?? 'usuario'}
+      <div className="ficha-pestana-grafito p-6">
+        <h2 className="font-display text-xl font-bold tracking-tight text-tinta">
+          Buen día, {user?.nombre ?? 'usuario'}
         </h2>
-        <p className="text-gray-600 mt-1">Resumen de ventas de hoy</p>
+        <p className="mt-0.5 font-ledger text-xs uppercase tracking-sello text-tintaSuave">
+          Resumen del día · {fechaHoy()}
+        </p>
         {error && (
-          <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="mt-4 border-2 border-oferta bg-oferta/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-oferta">
             {error}
           </div>
         )}
@@ -64,74 +94,103 @@ export const Dashboard = () => {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-pauta border-b-oferta"></div>
         </div>
       ) : data ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-            <p className="text-sm text-gray-600 font-semibold">Ventas de hoy</p>
-            <p className="text-3xl font-bold text-gray-900 mt-1">{data.resumen.totalVentas}</p>
-            <p className="text-xs text-gray-500 mt-1">tickets registrados</p>
+        <div className="grid grid-cols-1 gap-4 select-none sm:grid-cols-2 lg:grid-cols-5">
+          <div className="ficha p-5">
+            <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+              Ventas de hoy
+            </p>
+            <div className="mt-2.5 rounded-ficha border border-pautaOscura bg-papelAlto px-3 py-2 text-center font-ledger text-2xl font-bold text-tinta">
+              {data.resumen.totalVentas}
+            </div>
+            <p className="mt-1.5 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+              tickets registrados
+            </p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-            <p className="text-sm text-gray-600 font-semibold">Ingresos del día</p>
-            <p className="text-3xl font-bold text-green-600 mt-1">
+
+          <div className="ficha p-5">
+            <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+              Ingresos del día
+            </p>
+            <div className="mt-2.5 rounded-ficha border border-pautaOscura bg-papelAlto px-3 py-2 text-center font-ledger text-2xl font-bold text-hoja">
               {formatCurrency(data.resumen.totalIngresos)}
+            </div>
+            <p className="mt-1.5 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+              ventas válidas
             </p>
-            <p className="text-xs text-gray-500 mt-1">ventas válidas</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-            <p className="text-sm text-gray-600 font-semibold">Utilidad Bruta</p>
-            <p className="text-3xl font-bold text-blue-600 mt-1">
-              {formatCurrency((data.resumen as any).utilidadBruta || 0)}
+
+          <div className="ficha p-5">
+            <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+              Utilidad bruta
             </p>
-            <p className="text-xs text-gray-500 mt-1">ganancia estimada</p>
+            <div className="mt-2.5 rounded-ficha border border-pautaOscura bg-papelAlto px-3 py-2 text-center font-ledger text-2xl font-bold text-hoja">
+              {formatCurrency(data.resumen.utilidadBruta ?? 0)}
+            </div>
+            <p className="mt-1.5 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+              ganancia estimada
+            </p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-            <p className="text-sm text-gray-600 font-semibold">Ticket promedio</p>
-            <p className="text-3xl font-bold text-gray-900 mt-1">
+
+          <div className="ficha p-5">
+            <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+              Ticket promedio
+            </p>
+            <div className="mt-2.5 rounded-ficha border border-pautaOscura bg-papelAlto px-3 py-2 text-center font-ledger text-2xl font-bold text-tinta">
               {formatCurrency(data.resumen.ticketPromedio)}
+            </div>
+            <p className="mt-1.5 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+              por venta
             </p>
-            <p className="text-xs text-gray-500 mt-1">por venta</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-            <p className="text-sm text-gray-600 font-semibold">Productos por agotarse</p>
-            <p className="text-3xl font-bold text-red-600 mt-1">{data.stockBajo.length}</p>
-            <p className="text-xs text-gray-500 mt-1">con stock bajo</p>
+
+          <div className="ficha p-5">
+            <p className="font-ledger text-xxs font-bold uppercase tracking-sello text-tintaSuave">
+              Por agotarse
+            </p>
+            <div className="mt-2.5 rounded-ficha border-2 border-oferta bg-oferta/10 px-3 py-2 text-center font-ledger text-2xl font-bold text-oferta">
+              {data.stockBajo.length}
+            </div>
+            <p className="mt-1.5 font-ledger text-xxs uppercase tracking-sello text-tintaTenue">
+              con stock bajo
+            </p>
           </div>
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {accesosRapidos
-          .filter((acceso) => (esAdmin ? true : acceso.to !== '/usuarios'))
-          .map((acceso) => (
-            <Link
-              key={acceso.to}
-              to={acceso.to}
-              className={`${acceso.color} text-white rounded-lg shadow-sm p-6 transition-colors`}
-            >
-              <h3 className="text-lg font-semibold">{acceso.titulo}</h3>
-              <p className="text-sm opacity-90 mt-1">{acceso.descripcion}</p>
-            </Link>
-          ))}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {accesosRapidos.map((acceso) => (
+          <Link
+            key={acceso.to}
+            to={acceso.to}
+            className={`${acceso.ficha} block p-6 transition-all hover:-translate-y-0.5 hover:shadow-lift`}
+          >
+            <h3 className="font-display text-lg font-bold tracking-tight text-tinta">
+              {acceso.titulo}
+            </h3>
+            <p className="mt-1 font-ledger text-xs uppercase tracking-sello text-tintaSuave">
+              {acceso.descripcion}
+            </p>
+            <span className="mt-3 inline-block font-ledger text-xs font-bold uppercase tracking-sello text-oferta">
+              Abrir ›
+            </span>
+          </Link>
+        ))}
       </div>
 
       {esAdmin && (
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Accesos de administración</h3>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/usuarios"
-              className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
-            >
-              Usuarios y roles
+        <div className="ficha-pestana-grafito p-6">
+          <h3 className="font-ledger text-xs font-bold uppercase tracking-sello text-tintaSuave">
+            Panel de control administrativo
+          </h3>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link to="/usuarios" className="btn btn-papel">
+              Gestión de operadores
             </Link>
-            <Link
-              to="/configuracion"
-              className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
-            >
-              Configuración del negocio
+            <Link to="/configuracion" className="btn btn-papel">
+              Parámetros del sistema
             </Link>
           </div>
         </div>

@@ -12,26 +12,29 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.0",
-    "tailwindcss": "^3.4.11",
-    "postcss": "^8.4.47",
-    "autoprefixer": "^10.4.20"
+    "tailwindcss": "^3.4.11"
   },
   "devDependencies": {
-    "vite": "^5.4.8",
+    "@eslint/js": "^8.57.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.65.0",
+    "@typescript-eslint/parser": "^8.65.0",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.9",
-    "@eslint/js": "^8.57.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
     "typescript": "^5.6.2",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1"
+    "vite": "^5.4.8"
   },
   "eslintConfig": {
     "extends": [

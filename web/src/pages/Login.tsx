@@ -33,26 +33,31 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div className="flex min-h-screen items-center justify-center bg-papel px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        <div className="mb-7 select-none text-center">
+          <div className="nav-tab mx-auto flex h-12 w-12 items-center justify-center bg-hoja shadow-card">
+            <span className="text-lg font-bold text-white">SC</span>
+          </div>
+          <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-tinta">
             StockCaja
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Gestión de inventario y ventas para almacenes locales
+          <p className="mt-0.5 text-xs text-tintaSuave">
+            Punto de venta y control de caja
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-          <div className="rounded-md shadow-sm -space-y-px">
+
+        <div className="ficha-pestana p-6 sm:p-8">
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {error && (
+              <div className="border-2 border-oferta bg-oferta/10 px-4 py-3 font-ledger text-xs font-bold uppercase tracking-sello text-oferta">
+                {error}
+              </div>
+            )}
+
             <div>
-              <label htmlFor="email-address" className="sr-only">
-                Correo electrónico
+              <label htmlFor="email-address" className="etiqueta">
+                Usuario / Correo
               </label>
               <input
                 id="email-address"
@@ -62,12 +67,13 @@ export const Login = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Correo electrónico"
+                className="input"
+                placeholder="usuario@stockcaja.cl"
               />
             </div>
+
             <div>
-              <label htmlFor="password" className="sr-only">
+              <label htmlFor="password" className="etiqueta">
                 Contraseña
               </label>
               <input
@@ -78,28 +84,24 @@ export const Login = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Contraseña"
+                className="input"
+                placeholder="••••••••"
               />
             </div>
-          </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-            </button>
-          </div>
+            <div>
+              <button type="submit" disabled={isLoading} className="btn btn-primario w-full py-3">
+                {isLoading ? 'Conectando…' : 'Entrar al sistema'}
+              </button>
+            </div>
 
-          <div className="text-center">
-            <p className="text-xs text-gray-500">
-              Demo: admin@stockcaja.cl / admin123
-            </p>
-          </div>
-        </form>
+            <div className="border border-pauta bg-card px-3 py-2.5 text-center font-ledger text-xs text-tintaSuave">
+              Demo:{' '}
+              <span className="font-bold text-tinta">admin@stockcaja.cl</span> /{' '}
+              <span className="font-bold text-tinta">admin123</span>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -79,7 +79,20 @@ export interface MovimientoStock {
 
 export interface Configuracion {
   key: string;
-  value: any;
+  value: unknown;
+}
+
+export interface CajaSessionData {
+  id: number;
+  montoApertura: number;
+  aperturaAt: string;
+  ventasEfectivo: number;
+  ventasTarjeta: number;
+  ventasTransferencia: number;
+  totalVentas: number;
+  ingresosManuales: number;
+  egresosManuales: number;
+  efectivoEsperado: number;
 }
 
 export interface ResumenReportes {
@@ -88,6 +101,8 @@ export interface ResumenReportes {
     totalIngresos: number;
     totalAnuladas: number;
     ticketPromedio: number;
+    totalCosto?: number;
+    utilidadBruta?: number;
   };
   ventasPorDia: Record<string, { total: number; count: number }>;
   productosMasVendidos: Array<{ productoId: number; nombre?: string; codigoBarras?: string; cantidadVendida: number; ingresos: number }>;

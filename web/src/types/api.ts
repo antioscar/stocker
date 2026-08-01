@@ -107,7 +107,7 @@ export interface ReportFilters {
 }
 
 export interface ConfigUpdate {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface BackupResponse {

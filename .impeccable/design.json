@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-31T00:00:00.000Z",
+  "title": "Design System: StockCaja",
+  "extensions": {
+    "colorMeta": {
+      "oferta": {
+        "role": "secondary",
+        "displayName": "Rojo Riesgo",
+        "canonical": "#D64040",
+        "tonalRamp": ["#3f0e0e", "#6d1717", "#a02222", "#ce2c2c", "#dc5b5b", "#e68989", "#f1bcbc", "#faeaea"]
+      },
+      "hoja": {
+        "role": "primary",
+        "displayName": "Verde Marca",
+        "canonical": "#198754",
+        "tonalRamp": ["#0c4128", "#157046", "#1ea466", "#27d383", "#57e0a1", "#87e9bb", "#baf2d8", "#e9fbf3"]
+      },
+      "sello": {
+        "role": "tertiary",
+        "displayName": "Ámbar Aviso",
+        "canonical": "#D97706",
+        "tonalRamp": ["#4a2902", "#814704", "#bd6705", "#f38507", "#faa23d", "#fbbc74", "#fdd9b0", "#fef3e6"]
+      },
+      "grafito": {
+        "role": "neutral",
+        "displayName": "Grafito",
+        "canonical": "#1B2430",
+        "tonalRamp": ["#1c2531", "#304055", "#465d7c", "#5a78a0", "#8098b7", "#a4b5cc", "#cbd5e2", "#eff2f6"]
+      },
+      "grafito-oscuro": {
+        "role": "neutral",
+        "displayName": "Grafito Oscuro",
+        "canonical": "#121A24",
+        "tonalRamp": ["#1a2533", "#2c4058", "#415d81", "#5378a7", "#7a98bd", "#a0b5cf", "#c9d5e4", "#eef2f6"]
+      },
+      "papel": {
+        "role": "neutral",
+        "displayName": "Gris Papel",
+        "canonical": "#F4F6F9",
+        "tonalRamp": ["#1b2431", "#2f3e56", "#445b7d", "#5876a2", "#7e96b9", "#a3b3cd", "#cad4e2", "#eff2f6"]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Blanco Tarjeta",
+        "canonical": "#FFFFFF",
+        "tonalRamp": ["#262626", "#424242", "#616161", "#7d7d7d", "#9c9c9c", "#b8b8b8", "#d6d6d6", "#f2f2f2"]
+      },
+      "papel-alto": {
+        "role": "neutral",
+        "displayName": "Papel Alto",
+        "canonical": "#FAFBFD",
+        "tonalRamp": ["#162137", "#26395f", "#37538a", "#476bb3", "#718dc6", "#99add6", "#c5d0e8", "#edf0f8"]
+      },
+      "pauta": {
+        "role": "neutral",
+        "displayName": "Pauta",
+        "canonical": "#E3E7EE",
+        "tonalRamp": ["#1d2430", "#323e53", "#495a79", "#5e759b", "#8395b4", "#a6b3c9", "#ccd3e0", "#eff1f5"]
+      },
+      "pauta-oscura": {
+        "role": "neutral",
+        "displayName": "Pauta Oscura",
+        "canonical": "#C9D2DC",
+        "tonalRamp": ["#1e262e", "#344250", "#4c6076", "#627c98", "#869ab1", "#a8b7c7", "#cdd6df", "#f0f2f5"]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#1F2937",
+        "tonalRamp": ["#1c2431", "#303f55", "#465c7c", "#5a77a0", "#8097b7", "#a4b4cc", "#cbd4e2", "#eff2f6"]
+      },
+      "tinta-suave": {
+        "role": "neutral",
+        "displayName": "Tinta Suave",
+        "canonical": "#5B6573",
+        "tonalRamp": ["#22262b", "#3b414a", "#565f6c", "#6e7b8c", "#909aa7", "#afb6c0", "#d1d5db", "#f1f2f4"]
+      },
+      "tinta-tenue": {
+        "role": "neutral",
+        "displayName": "Tinta Tenue",
+        "canonical": "#8D97A5",
+        "tonalRamp": ["#22262b", "#3b414a", "#565f6c", "#6e7b8c", "#909aa7", "#afb6c0", "#d1d5db", "#f1f2f4"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Títulos de página y encabezados; fuente del sistema en bold."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Cuerpo, tablas y formularios; fuente del sistema a 14px."
+      },
+      "label": {
+        "displayName": "Etiqueta",
+        "purpose": "Etiquetas de campo y títulos de KPI; fuente del sistema a 12px semibold."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 1px 2px rgba(16,24,40,0.05), 0 1px 3px rgba(16,24,40,0.08)",
+        "purpose": "Elevación base de toda ficha; papel apilado en reposo."
+      },
+      {
+        "name": "lift",
+        "value": "0 4px 12px rgba(16,24,40,0.10), 0 12px 32px rgba(16,24,40,0.16)",
+        "purpose": "Modales, dropdowns y hover de tarjetas que se levantan de la pila."
+      }
+    ],
+    "motion": [
+      {
+        "name": "estado",
+        "value": "all 0.15s ease",
+        "purpose": "Transiciones de estado en botones (hover, active translateY(1px))."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1536px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón Primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "La acción de plata del sistema: cobrar, crear, guardar, abrir caja.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Cobrar $12.500</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:8px;padding:8px 16px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:600;transition:background 0.15s ease;}.ds-btn:focus-visible{outline:none;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #198754;}.ds-btn-primary{background:#198754;color:#FFFFFF;box-shadow:0 1px 2px rgba(16,24,40,0.05),0 1px 3px rgba(16,24,40,0.08);}.ds-btn-primary:hover{background:#116A3F;}.ds-btn-primary:active{transform:translateY(1px);}"
+    },
+    {
+      "name": "Botón Grafito",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Acción neutra fuerte: guardar ajustes, abrir caja, navegar a POS.",
+      "html": "<button class=\"ds-btn ds-btn-grafito\">Abrir caja</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:8px;padding:8px 16px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:600;transition:background 0.15s ease;}.ds-btn:focus-visible{outline:none;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #1B2430;}.ds-btn-grafito{background:#1B2430;color:#FFFFFF;box-shadow:0 1px 2px rgba(16,24,40,0.05),0 1px 3px rgba(16,24,40,0.08);}.ds-btn-grafito:hover{background:#121A24;}.ds-btn-grafito:active{transform:translateY(1px);}"
+    },
+    {
+      "name": "Botón Papel",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción de vuelta o cancelar: blanco con borde gris, sin peso de color.",
+      "html": "<button class=\"ds-btn ds-btn-papel\">Cancelar</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border-radius:8px;padding:8px 16px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:600;transition:background 0.15s ease;}.ds-btn:focus-visible{outline:none;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #C9D2DC;}.ds-btn-papel{border:1px solid #C9D2DC;background:#FFFFFF;color:#1F2937;box-shadow:0 1px 2px rgba(16,24,40,0.05),0 1px 3px rgba(16,24,40,0.08);}.ds-btn-papel:hover{background:#F4F6F9;}.ds-btn-papel:active{transform:translateY(1px);}"
+    },
+    {
+      "name": "Input de Ficha",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo de texto: blanco con borde gris; el foco baja a verde.",
+      "html": "<div style=\"max-width:280px;\"><label style=\"display:block;margin-bottom:6px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px;font-weight:500;color:#5B6573;\">Código de barras</label><input type=\"text\" placeholder=\"Ingresa el código…\" class=\"ds-input\" /></div>",
+      "css": ".ds-input{width:100%;border:1px solid #C9D2DC;background:#FFFFFF;color:#1F2937;padding:10px 12px;border-radius:8px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;transition:border-color 0.15s ease,box-shadow 0.15s ease;}.ds-input::placeholder{color:#8D97A5;}.ds-input:focus{outline:none;border-color:#198754;box-shadow:0 0 0 2px rgba(25,135,84,0.15);}"
+    },
+    {
+      "name": "Sello de Alerta",
+      "kind": "chip",
+      "refersTo": "button-primary",
+      "description": "Badge discreto para estados: stock bajo, rol ADMIN, venta anulada.",
+      "html": "<span class=\"ds-sello ds-sello-alerta\">Stock bajo</span>",
+      "css": ".ds-sello{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;border:1px solid;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px;font-weight:500;}.ds-sello-alerta{border-color:rgba(214,64,64,0.30);background:rgba(214,64,64,0.10);color:#D64040;}"
+    },
+    {
+      "name": "Ficha",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Superficie de contenido: tarjeta blanca con borde gris y sombra de papel.",
+      "html": "<div class=\"ds-ficha\" style=\"max-width:280px;padding:16px 24px;\"><div style=\"font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px;font-weight:500;color:#5B6573;\">Total vendido hoy</div><div style=\"font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:32px;font-weight:700;color:#1F2937;margin-top:4px;\">$248.900</div></div>",
+      "css": ".ds-ficha{background:#FFFFFF;border:1px solid #C9D2DC;border-radius:8px;box-shadow:0 1px 2px rgba(16,24,40,0.05),0 1px 3px rgba(16,24,40,0.08);}"
+    },
+    {
+      "name": "Pestaña de Navegación",
+      "kind": "nav",
+      "refersTo": "button-primary",
+      "description": "Ítem del menú: pestaña plana sobre cabecera grafito; la activa se llena de verde.",
+      "html": "<nav style=\"display:flex;gap:4px;background:#1B2430;padding:10px 12px 0;border-radius:8px 8px 0 0;\"><span class=\"ds-tab ds-tab-active\">Ventas</span><span class=\"ds-tab\">Productos</span><span class=\"ds-tab\">Reportes</span></nav>",
+      "css": ".ds-tab{padding:8px 16px 10px;background:#FFFFFF;color:#5B6573;border:1px solid #E3E7EE;border-bottom:none;border-radius:6px 6px 0 0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px;font-weight:600;cursor:pointer;}.ds-tab:hover{background:#FAFBFD;color:#1F2937;}.ds-tab-active{background:#198754;color:#FFFFFF;border-color:#198754;}"
+    },
+    {
+      "name": "Ficha con Pestaña",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "El componente firma: tarjeta blanca cuya pestaña verde sobresale del borde superior.",
+      "html": "<div style=\"background:#F4F6F9;padding:32px 16px 16px;\"><div class=\"ds-ficha-pestana\" style=\"max-width:320px;padding:16px 24px;\"><div style=\"font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px;font-weight:500;color:#5B6573;\">Venta #BOL-0042</div><div style=\"font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:24px;font-weight:700;color:#1F2937;margin-top:4px;\">$14.320</div></div></div>",
+      "css": ".ds-ficha-pestana{position:relative;margin-top:18.4px;background:#FFFFFF;border:1px solid #C9D2DC;border-radius:8px;box-shadow:0 1px 2px rgba(16,24,40,0.05),0 1px 3px rgba(16,24,40,0.08);}.ds-ficha-pestana::before{content:'';position:absolute;top:-18.4px;left:16px;width:112px;height:18.4px;background:#198754;border:1px solid #116A3F;border-bottom:none;border-radius:6px 6px 0 0;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El Fichero Limpio del Almacén",
+    "overview": "StockCaja se ve como el sistema de gestión de un negocio serio y ordenado: un lienzo blanco y limpio, tarjetas blancas con bordes finos grises, y un único acento verde que marca las acciones de dinero y lo que está bien. Cada pantalla es una \"ficha\" — una tarjeta blanca con esquinas suavemente redondeadas que, cuando corresponde, lleva una pestaña de color que la clasifica por función.\n\nLa dirección es profesional y sobria: nada de decoración retro ni tipografía de máquina. Todo el texto usa la fuente del sistema, legible y familiar, porque un cajero debe leer precios y cantidades de un vistazo. El verde es la marca de lo que funciona (cobrar, guardar, caja abierta); el rojo se reserva para lo urgente (eliminar, stock por agotarse, errores). El tono transmite confianza: un almacén de barrio que lleva sus cuentas en orden.",
+    "keyCharacteristics": [
+      "Fondo gris muy claro y frío (#F4F6F9); el contenido vive sobre tarjetas blancas con sombra suave.",
+      "Cabecera y barras en grafito azulado profundo; la navegación usa pestañas de folder discretas.",
+      "Un acento verde (marca), usado en acciones de dinero y estados positivos; rojo solo para peligro.",
+      "Tipografía del sistema en todo el sistema: sin serif decorativa ni mono de máquina. Máxima legibilidad.",
+      "Bordes finos grises; sombras cortas; la profundidad se siente como papel apilado, no como vidrio ni neón."
+    ],
+    "rules": [
+      { "name": "La Regla del Único Verde", "body": "El verde marca es el color de la acción de dinero: cobrar, guardar, abrir caja, confirmar. Se usa con frecuencia porque guía al cajero, pero nunca compite con el rojo de riesgo.", "section": "colors" },
+      { "name": "La Regla del Rojo Reservado", "body": "El rojo aparece solo donde hay peligro o destrucción: eliminar, anular, stock por agotarse, errores. Si una pantalla no tiene una acción destructiva, no lleva rojo.", "section": "colors" },
+      { "name": "La Regla de la Pauta", "body": "Los bordes y divisores son de 1px en gris pauta. El borde de tarjeta nunca es grueso ni de color.", "section": "colors" },
+      { "name": "La Regla de la Legibilidad", "body": "Si un texto se puede leer mal, se escribe en fuente del sistema con peso y tamaño claro. No se usan mayúsculas espaciadas ni tipografías de máquina para contenido importante.", "section": "typography" },
+      { "name": "La Regla del Papel Apilado", "body": "Las superficies están planas en reposo; `card` da presencia a cada ficha y `lift` solo aparece para lo que se superpone (modales, menús, dropdowns). Prohibido el resplandor (glow) y los degradados de brillo.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do apoyar todo el contenido sobre el fondo gris claro y fichas blancas; la interfaz siempre queda clara y limpia.",
+      "Do usar la fuente del sistema en todo el sistema; nunca tipografías decorativas o de máquina para contenido.",
+      "Do reservar el verde para la acción de dinero y el rojo para el peligro; que cada color tenga un trabajo.",
+      "Do usar bordes de 1px en gris pauta para tarjetas y divisores.",
+      "Do elevar modales y menús con la sombra `lift`; el resto descansa con `card`.",
+      "Do hacer legibles los números: fuente del sistema, peso bold y tamaños claros."
+    ],
+    "donts": [
+      "Don't volver a la estética de papel manila ni sepia: los neutros son fríos y limpios.",
+      "Don't usar serif decorativa (Georgia) ni mono de máquina (Courier) en la interfaz.",
+      "Don't usar azules de plantilla SaaS ni acentos desaturados.",
+      "Don't poner bordes gruesos de color alrededor de tarjetas redondeadas; el borde de ficha es de 1px gris.",
+      "Don't usar sombras difusas grandes ni glows; la profundidad se lee como tarjetas apiladas.",
+      "Don't inventar fuentes externas: el sistema corre con la pila de sistema para mantenerse on-premise sin internet."
+    ]
+  }
+}

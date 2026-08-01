@@ -46,10 +46,10 @@ router.put('/usuarios/:id', require('./usuarios').update);
 router.delete('/usuarios/:id', require('./usuarios').delete);
 
 // Sale routes
-router.post('/ventas', require('./ventas').create);
-router.get('/ventas', require('./ventas').list);
-router.get('/ventas/:id', require('./ventas').getById);
-router.post('/ventas/:id/anular', require('./ventas').anular);
+router.post('/ventas', authenticateToken, require('./ventas').create);
+router.get('/ventas', authenticateToken, require('./ventas').list);
+router.get('/ventas/:id', authenticateToken, require('./ventas').getById);
+router.post('/ventas/:id/anular', authenticateToken, require('./ventas').anular);
 
 // Report routes
 router.get('/reportes/resumen', require('./reportes').resumen);

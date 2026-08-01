@@ -13,18 +13,18 @@
 
 ## Estado actual
 
-- **Fases A, B, C, D y E del plan inicial completadas. Fase 1 (Operación Diaria Express) COMPLETADA. ✅**
-- **Backend `server/` FUNCIONA ✅** — `npm run dev` levanta en `:3000` con CORS y base de datos SQLite sincronizada.
-  - Se crearon los modelos `CajaSession` y `MovimientoCaja` en SQLite con migraciones.
-  - Implementado controlador `/api/caja` para apertura, cierre, arqueos y transacciones manuales.
-  - Las ventas validan sesión activa y se asocian al turno de caja.
-  - Los reportes resumen incluyen cálculo de **Utilidad Bruta** (Ingresos - Costos).
-- **Frontend `web/` FUNCIONA ✅** — `npm run dev` levanta en `:5173`, compilación de TypeScript limpia (`tsc --noEmit` OK).
-  - ✅ Implementado modal `CajaModal` para el control de turnos y transacciones de caja.
-  - ✅ El POS (`POS.tsx`) bloquea el acceso si la caja está cerrada. Implementa escaneo de códigos de barras continuo y desglose correcto del IVA bruto chileno.
-  - ✅ Se añadió el indicador de caja en la barra superior del Layout.
-  - ✅ Dashboard y Reportes reflejan ahora las ganancias (utilidad bruta).
-- **Plan de Fases:** Fase 1: Completada ✅ | Fase 2: Pendiente ⏳
+- **Backend `server/` FUNCIONA ✅** — `npm run dev` levanta en `:3000` con CORS y base de datos SQLite sincronizada. Caja por turnos, ventas transaccionales, folio `BOL-####`, stock nunca negativo, utilidad bruta.
+- **REDISEÑO FRONTEND — TEMA V3 MEJORADO A BLANCO MINIMALISTA Y PROFESIONAL** — Identidad limpia y moderna aplicada a todo `web/src/`.
+  - `PRODUCT.md` y `docs/guia_mercado_pos_chile.md` creados (contexto + mercado chileno).
+  - Rediseñadas: `Layout.tsx` (header blanco minimalista + navegación plana con línea activa), `Login`, `Dashboard`, `POS` + `Cart` + `CajaModal` + `ProductSearch`, `Productos`, `Clientes`, `Usuarios`, `Reportes`, `Configuracion`.
+  - **POS Integrado:** El POS ahora se renderiza de forma inline en la estructura del Layout general (se removió el overlay de pantalla completa y la cabecera oscura duplicada), lo cual restaura la barra de navegación superior y el acceso directo al Dashboard.
+  - **Análisis de Competencia:** Realizado un análisis de los POS más usados en Chile (Bsale, Loyverse, Almasend, El Almacén) y se incorporaron 5 propuestas de valor al plan estratégico (`docs/analisis_mercado_plan.md`): Módulo de Fiado/Crédito, Ventas Pesables, Carga Rápida de Stock/Compras, Generación/Impresión de etiquetas e Impulso de Packs/Promociones.
+  - **Calidad OK**: `tsc --noEmit` limpio, `eslint .` 0 errores (solo warnings preexistentes de return types), `npm run build` OK (CSS 31.49 kB / JS 233.47 kB), **detector Impeccable: 0 findings**.
+  - Se reparó lint del repo: faltaban deps (`@typescript-eslint/*`, `eslint-config-prettier`) y se creó `web/.eslintignore` (dist/config files). Tipado: `apiFetch<T=unknown>`, `CajaSessionData` y campos `utilidadBruta/totalCosto` agregados a `types`.
+  - **Fase G — `DESIGN.md` escrito** (raíz, formato spec oficial: frontmatter YAML con tokens normativos + 8 secciones canónicas) + sidecar `.impeccable/design.json` (schemaVersion 2: ramps de colores, componentes autocontenidos HTML/CSS, narrative).
+  - **DECISIÓN USUARIO 31/07 y 01/08 (TEMA V3 MINIMALISTA - VIGENTE):** **tema blanco sobrio y profesional con verde de marca**. Tokens finales en `web/tailwind.config.js`: fondo `papel #F8FAFC`, `card #FFFFFF`, `papelAlto #FAFBFD`, `pauta #E3E7EE`, `pautaOscura #C9D2DC`, `tinta #1F2937`, `tintaSuave #5B6573`, `tintaTenue #8D97A5`, `grafito #1B2430`, `grafitoOscuro #121A24`, **`hoja #198754` (verde marca, hover `#116A3F`)**, `oferta #D64040` (rojo solo para peligro), `sello #D97706`. **Todas las fuentes = pila del sistema** (sin Georgia serif ni Courier). Sin grano SVG. Sin orejas de pestañas retro clip-path (reemplazadas por un sutil borde superior de acento).
+  - **Open Design instalado** (`github.com/nexu-io/open-design`, clonado en `open-design/`, `pnpm install` OK, pnpm 11.18.0 global). Dev server: Web `http://127.0.0.1:17573/`, Daemon `http://127.0.0.1:17456/` (comando `pnpm tools-dev run web`). Se explorará cómo mezclarlo con Impeccable en pasos futuros.
+- **Plan de Fases:** Fase 1: Completada ✅ | Fase 2: Pendiente ⏳ | Rediseño Impeccable: A–G completadas + tema v3 blanco minimalista aplicado.
 
 
 ## Componentes Frontend Completados

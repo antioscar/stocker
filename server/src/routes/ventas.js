@@ -122,6 +122,7 @@ const create = async (req, res) => {
     
     res.status(201).json(ventaConDetalles);
   } catch (error) {
+    console.error('Error al crear venta:', error);
     if (error.message.includes('Stock insuficiente')) {
       return res.status(400).json({ error: error.message });
     }

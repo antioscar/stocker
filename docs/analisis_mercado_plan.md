@@ -70,3 +70,29 @@ Para competir comercialmente en Chile y ser una solución atractiva de **licenci
 ### Fase 3: Modernización Estética y Hardware (Largo Plazo)
 *   **Rediseño visual:** Aplicar una hoja de estilo moderna y coherente que sea estéticamente premium.
 *   **Atajos de Teclado:** Implementación de atajos de teclado globales en el punto de venta.
+
+---
+
+## 5. Propuesta de Nuevas Funcionalidades Avanzadas para StockCaja
+
+Analizando el uso diario en almacenes locales y softwares líderes (Bsale, Loyverse, Almasend y El Almacén), identificamos 5 herramientas críticas que agregarían un valor comercial inmenso al proyecto StockCaja:
+
+### A. Módulo de "Fiado" (Crédito de Clientes)
+*   **Contexto:** En almacenes de barrio chilenos, la compra al fiado para pagar a fin de mes es una constante cultural.
+*   **Función:** Permitir registrar una venta con método de pago "Fiado" asociada a un cliente registrado. El sistema debe llevar una cuenta corriente por cliente con su saldo deudor acumulado y permitir registrar abonos o pagos totales, imprimiendo un ticket de comprobante de pago de deuda.
+
+### B. Gestión de Productos Pesables (Conexión a Balanza / Entrada Manual)
+*   **Contexto:** Almacenes venden pan, cecinas, queso y frutas por peso (kilogramos o gramos).
+*   **Función:** Permitir marcar productos como "Pesables" en el inventario. En el POS, al seleccionarlos, debe solicitar el peso en gramos (o capturarlo por puerto serial si hay balanza física conectada) y calcular dinámicamente el subtotal en base al precio por kilo.
+
+### C. Carga Rápida de Stock y Gestión de Proveedores
+*   **Contexto:** La reposición de mercadería es diaria y los precios de costo varían constantemente debido a la inflación.
+*   **Función:** Diseñar una pantalla de "Entrada de Inventario" rápida donde el dueño pueda seleccionar un proveedor, ingresar el número de factura/guía de despacho, y escanear productos uno tras otro para sumar stock y actualizar el precio de costo unitario al instante.
+
+### D. Generación e Impresión de Etiquetas con Códigos de Barras
+*   **Contexto:** Muchos productos locales, dulces sueltos, o pan no traen códigos de barras.
+*   **Función:** Permitir que el sistema genere automáticamente códigos de barras internos para productos que no lo posean, y proveer una función para imprimir etiquetas adhesivas formateadas para mini-impresoras térmicas de etiquetas (ej: Brother o Zebra).
+
+### E. Promociones, Combos y Packs
+*   **Contexto:** Promociones tipo "2x1" o "Pack Bebida + Snack".
+*   **Función:** Configurar en el inventario reglas de descuento automáticas. Al acumular ciertas cantidades del producto (o combinación) en el carrito del POS, el descuento se aplica automáticamente sin intervención del cajero.
