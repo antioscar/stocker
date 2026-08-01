@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../services/api';
 import { Cart } from '../components/Cart';
 import { CajaModal } from '../components/CajaModal';
+import type { Cliente } from '../types';
 
 interface Producto {
   id: number;
@@ -35,6 +36,9 @@ export const POS = () => {
   const [cajaModalMode, setCajaModalMode] = useState<'apertura' | 'cierre' | 'movimiento' | null>(null);
   const [isCajaLoading, setIsCajaLoading] = useState(true);
 
+  // Clientes para fiar
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+
   // Estados de Búsqueda
   const [searchVal, setSearchVal] = useState('');
   const [searchResults, setSearchResults] = useState<Producto[]>([]);
@@ -61,8 +65,18 @@ export const POS = () => {
     }
   };
 
+  const fetchClientes = async () => {
+    try {
+      const res = await apiFetch<Cliente[]>('/clientes');
+      setClientes(res || []);
+    } catch (e) {
+      console.error('Error al cargar clientes', e);
+    }
+  };
+
   useEffect(() => {
     checkCajaEstado();
+    fetchClientes();
   }, []);
 
   // Autofocus persistent search input
@@ -86,6 +100,9 @@ export const POS = () => {
       if (e.key === 'F2') {
         e.preventDefault();
         const methods = ['efectivo', 'tarjeta', 'transferencia'];
+        if (clienteSeleccionado) {
+          methods.push('fiado');
+        }
         const currentIndex = methods.indexOf(metodoPago);
         const nextIndex = (currentIndex + 1) % methods.length;
         setMetodoPago(methods[nextIndex]);
@@ -454,13 +471,24 @@ export const POS = () => {
           <div className="ficha p-5 bg-white border border-slate-200 rounded-lg shadow-sm space-y-4">
             <div>
               <label className="etiqueta">Cliente (Opcional)</label>
-              <input
-                type="text"
+              <select
                 value={clienteSeleccionado}
-                onChange={(e) => setClienteSeleccionado(e.target.value)}
-                placeholder="Consumidor Final"
-                className="input"
-              />
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setClienteSeleccionado(val);
+                  if (!val && metodoPago === 'fiado') {
+                    setMetodoPago('efectivo');
+                  }
+                }}
+                className="select"
+              >
+                <option value="">Consumidor Final</option>
+                {clientes.map((c) => (
+                  <option key={c.id} value={String(c.id)}>
+                    {c.nombre} {c.saldoDeuda > 0 ? `(Deuda: ${formatCurrency(c.saldoDeuda)})` : ''}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="etiqueta">Descuento %</label>
@@ -478,21 +506,27 @@ export const POS = () => {
           {/* Métodos de Pago */}
           <div className="ficha p-5 bg-white border border-slate-200 rounded-lg shadow-sm space-y-3">
             <label className="etiqueta">Método de Pago</label>
-            <div className="grid grid-cols-3 gap-2">
-              {['efectivo', 'tarjeta', 'transferencia'].map((metodo) => (
-                <button
-                  key={metodo}
-                  type="button"
-                  onClick={() => setMetodoPago(metodo)}
-                  className={`py-2 rounded-md font-bold text-xs uppercase transition-colors border ${
-                    metodoPago === metodo
-                      ? 'bg-hoja text-white border-hoja'
-                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  {metodo}
-                </button>
-              ))}
+            <div className="grid grid-cols-2 gap-2">
+              {['efectivo', 'tarjeta', 'transferencia', 'fiado'].map((metodo) => {
+                const isFiadoDisabled = metodo === 'fiado' && !clienteSeleccionado;
+                return (
+                  <button
+                    key={metodo}
+                    type="button"
+                    onClick={() => setMetodoPago(metodo)}
+                    disabled={isFiadoDisabled}
+                    className={`py-2 rounded-md font-bold text-xs uppercase transition-all border ${
+                      metodoPago === metodo
+                        ? metodo === 'fiado'
+                          ? 'bg-amber-600 text-white border-amber-600'
+                          : 'bg-hoja text-white border-hoja'
+                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed'
+                    }`}
+                  >
+                    {metodo}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

@@ -37,6 +37,8 @@ router.get('/clientes/:id', require('./clientes').getById);
 router.post('/clientes', require('./clientes').create);
 router.put('/clientes/:id', require('./clientes').update);
 router.delete('/clientes/:id', require('./clientes').delete);
+router.post('/clientes/:id/abonos', authenticateToken, require('./clientes').registrarAbono);
+router.get('/clientes/:id/historial-cuenta', authenticateToken, require('./clientes').getHistorialCuenta);
 
 // User routes (admin only)
 router.get('/usuarios', require('./usuarios').list);

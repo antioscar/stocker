@@ -203,7 +203,12 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
 - **Integración del POS:** Se rediseñó `POS.tsx` para renderizarse de forma inline (removiendo el overlay fixed a pantalla completa y su propia cabecera oscura), lo cual restablece el acceso natural al Dashboard y unifica visualmente la cabecera blanca.
 - **Fondo de Pantalla:** Actualizado el fondo global a `#F8FAFC` en `tailwind.config.js` para dar mayor aire visual.
 - **Análisis de Competencia:** Realizado un análisis profundo de softwares de cajas de almacenes (como Bsale, Loyverse, Almasend, El Almacén) y se añadieron al plan estratégico (`docs/analisis_mercado_plan.md`) 5 funcionalidades clave indispensables para el comercio local: Módulo de Fiado/Crédito, Gestión de Pesables (balanzas), Carga Rápida de Compras y Proveedores, Impresión de Códigos de Barras internos y Configuración de Combos/Packs automáticos.
+- **Implementación de la Fase A (Módulo de Fiado):**
+  * **Base de Datos:** Actualizado el modelo de Prisma agregando `saldoDeuda` a la tabla `Cliente` y creando la tabla `PagoCredito`. Migración sqlite aplicada con éxito.
+  * **Backend:** Modificada la ruta de checkout de ventas para admitir método de pago `'fiado'`, incrementando de manera atómica el saldo deudor del cliente. Creados endpoints para registrar abonos y obtener la cartola / historial de cuenta corriente (compras + abonos).
+  * **Frontend:** Implementado selector de cliente por dropdown en el POS (mostrando deuda en tiempo real), botón de pago "fiado" (solo activo si hay cliente) y atajo F2. En la pantalla de Clientes se muestra la deuda, un modal con la cartola de movimientos unificada, y un modal de abonos con re-cálculo en tiempo real.
 - **Calidad:** Verificado `tsc --noEmit` y ejecutado `npm run build` exitosamente sin ningún error.
+
 
 
 

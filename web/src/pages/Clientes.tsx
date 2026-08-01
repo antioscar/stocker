@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../services/api';
-import type { Cliente, Venta } from '../types';
+import type { Cliente } from '../types';
 
 interface ClienteForm {
   nombre: string;
@@ -25,8 +25,13 @@ export const Clientes = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [historialCliente, setHistorialCliente] = useState<Cliente | null>(null);
-  const [ventasHistorial, setVentasHistorial] = useState<Venta[]>([]);
+  const [cuentaHistorial, setCuentaHistorial] = useState<any[]>([]);
   const [historialLoading, setHistorialLoading] = useState(false);
+
+  // Estados de Abono
+  const [abonoModalOpen, setAbonoModalOpen] = useState(false);
+  const [abonoMonto, setAbonoMonto] = useState<number>(0);
+  const [isAbonoSubmitting, setIsAbonoSubmitting] = useState(false);
 
   const fetchClientes = useCallback(async () => {
     setIsLoading(true);
@@ -112,16 +117,41 @@ export const Clientes = () => {
   const openHistorial = async (cliente: Cliente) => {
     setHistorialCliente(cliente);
     setHistorialLoading(true);
-    setVentasHistorial([]);
+    setCuentaHistorial([]);
     try {
-      const data = await apiFetch<Venta[]>(
-        `/ventas?clienteId=${cliente.id}`,
+      const data = await apiFetch<any>(
+        `/clientes/${cliente.id}/historial-cuenta`
       );
-      setVentasHistorial(data);
+      setCuentaHistorial(data.historial || []);
+      setHistorialCliente(data.cliente);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error al cargar historial');
+      setError(e instanceof Error ? e.message : 'Error al cargar historial de cuenta');
     } finally {
       setHistorialLoading(false);
+    }
+  };
+
+  const handleAbonoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!historialCliente || abonoMonto <= 0) return;
+    setIsAbonoSubmitting(true);
+    setError('');
+    setSuccess('');
+    try {
+      await apiFetch(`/clientes/${historialCliente.id}/abonos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ monto: abonoMonto }),
+      });
+      setSuccess('Abono registrado correctamente');
+      setAbonoModalOpen(false);
+      setAbonoMonto(0);
+      fetchClientes();
+      openHistorial(historialCliente);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al registrar abono');
+    } finally {
+      setIsAbonoSubmitting(false);
     }
   };
 
@@ -177,6 +207,7 @@ export const Clientes = () => {
                   <th>Teléfono</th>
                   <th>Email</th>
                   <th>Dirección</th>
+                  <th className="text-right">Deuda Pendiente</th>
                   <th className="text-right">Acciones</th>
                 </tr>
               </thead>
@@ -187,6 +218,11 @@ export const Clientes = () => {
                     <td className="px-4 py-3 text-tintaSuave">{cliente.telefono ?? '-'}</td>
                     <td className="px-4 py-3 text-tintaSuave">{cliente.email ?? '-'}</td>
                     <td className="px-4 py-3 text-tintaSuave">{cliente.direccion ?? '-'}</td>
+                    <td className={`px-4 py-3 text-right font-bold ${
+                      cliente.saldoDeuda > 0 ? 'text-oferta' : 'text-slate-400'
+                    }`}>
+                      {formatCurrency(cliente.saldoDeuda || 0)}
+                    </td>
                     <td className="space-x-3 px-4 py-3 text-right">
                       <button
                         onClick={() => openHistorial(cliente)}
@@ -288,52 +324,80 @@ export const Clientes = () => {
 
       {historialCliente && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta/60 p-4 backdrop-blur-sm">
-          <div className="ficha-pestana-hoja w-full max-w-2xl overflow-hidden">
+          <div className="ficha-pestana-hoja w-full max-w-2xl overflow-hidden bg-white">
             <div className="flex select-none items-center justify-between border-b border-pauta px-5 py-4">
-              <h3 className="font-ledger text-sm font-bold uppercase tracking-sello text-tinta">
-                Historial de {historialCliente.nombre}
-              </h3>
-              <button
-                onClick={() => setHistorialCliente(null)}
-                className="text-2xl font-bold leading-none text-tintaSuave transition-colors hover:text-oferta"
-              >
-                ×
-              </button>
+              <div>
+                <h3 className="font-ledger text-sm font-bold uppercase tracking-sello text-tinta">
+                  Historial de {historialCliente.nombre}
+                </h3>
+                <p className="text-xs text-slate-500 font-semibold mt-1">
+                  Deuda Pendiente: <span className="text-oferta font-bold">{formatCurrency(historialCliente.saldoDeuda || 0)}</span>
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                {(historialCliente.saldoDeuda || 0) > 0 && (
+                  <button
+                    onClick={() => {
+                      setAbonoMonto(historialCliente.saldoDeuda);
+                      setAbonoModalOpen(true);
+                    }}
+                    className="btn btn-primario py-1 px-3 text-xs bg-hoja hover:bg-hojaOscuro text-white border-hoja"
+                  >
+                    Abonar Deuda
+                  </button>
+                )}
+                <button
+                  onClick={() => setHistorialCliente(null)}
+                  className="text-2xl font-bold leading-none text-tintaSuave transition-colors hover:text-oferta"
+                >
+                  ×
+                </button>
+              </div>
             </div>
-            <div className="max-h-[70vh] overflow-y-auto bg-card">
+            <div className="max-h-[60vh] overflow-y-auto bg-card">
               {historialLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="h-8 w-8 animate-spin rounded-full border-2 border-pauta border-b-oferta"></div>
                 </div>
-              ) : ventasHistorial.length === 0 ? (
+              ) : cuentaHistorial.length === 0 ? (
                 <div className="py-8 text-center font-ledger text-xs uppercase tracking-sello text-tintaTenue">
-                  Este cliente no tiene compras registradas
+                  Este cliente no tiene movimientos registrados
                 </div>
               ) : (
                 <table className="tabla min-w-full">
                   <thead className="bg-card">
                     <tr>
-                      <th>Folio</th>
                       <th>Fecha</th>
-                      <th className="text-right">Total</th>
-                      <th className="text-center">Estado</th>
+                      <th>Descripción</th>
+                      <th className="text-right">Monto</th>
+                      <th className="text-center">Tipo</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {ventasHistorial.map((venta) => (
-                      <tr key={venta.id}>
-                        <td className="px-4 py-2.5 font-ledger font-bold text-tinta">
-                          {venta.folio}
-                        </td>
+                    {cuentaHistorial.map((item, idx) => (
+                      <tr key={`${item.tipo}-${item.id}-${idx}`}>
                         <td className="px-4 py-2.5 text-tintaSuave">
-                          {new Date(venta.createdAt).toLocaleDateString('es-CL')}
+                          {new Date(item.createdAt).toLocaleString('es-CL', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
                         </td>
-                        <td className="px-4 py-2.5 text-right font-ledger font-bold text-tinta">
-                          {formatCurrency(venta.total)}
+                        <td className="px-4 py-2.5 text-tinta font-medium">
+                          {item.detalle}
+                        </td>
+                        <td className={`px-4 py-2.5 text-right font-bold ${
+                          item.tipo === 'COMPRA' ? 'text-oferta' : 'text-hoja'
+                        }`}>
+                          {item.tipo === 'COMPRA' ? '+' : '-'}{formatCurrency(item.monto)}
                         </td>
                         <td className="px-4 py-2.5 text-center">
-                          <span className={`sello ${venta.anulada ? 'sello-alerta' : 'sello-ok'}`}>
-                            {venta.anulada ? 'Anulada' : 'Válida'}
+                          <span className={`sello ${
+                            item.tipo === 'COMPRA' ? 'border-amber-200 bg-amber-50 text-amber-700' : 'sello-ok'
+                          }`}>
+                            {item.tipo === 'COMPRA' ? 'Compra' : 'Abono'}
                           </span>
                         </td>
                       </tr>
@@ -342,6 +406,50 @@ export const Clientes = () => {
                 </table>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {abonoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta/60 p-4 backdrop-blur-sm">
+          <div className="ficha w-full max-w-sm overflow-hidden bg-white">
+            <div className="flex select-none items-center justify-between border-b border-pauta px-5 py-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-tinta">
+                Registrar Abono
+              </h3>
+              <button
+                onClick={() => setAbonoModalOpen(false)}
+                className="text-2xl font-bold leading-none text-tintaSuave transition-colors hover:text-oferta"
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleAbonoSubmit} className="space-y-4 p-5">
+              <div>
+                <label className="etiqueta">Monto del abono *</label>
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  max={historialCliente?.saldoDeuda || 9999999}
+                  value={abonoMonto || ''}
+                  onChange={(e) => setAbonoMonto(Number(e.target.value))}
+                  className="input text-lg font-bold"
+                  placeholder="Ingrese el monto..."
+                />
+                <p className="text-[10px] text-slate-400 mt-1 uppercase">
+                  Deuda máxima a abonar: {formatCurrency(historialCliente?.saldoDeuda || 0)}
+                </p>
+              </div>
+              <div className="flex justify-end space-x-3 pt-2">
+                <button type="button" onClick={() => setAbonoModalOpen(false)} className="btn btn-papel">
+                  Cancelar
+                </button>
+                <button type="submit" disabled={isAbonoSubmitting || !abonoMonto} className="btn btn-primario bg-hoja hover:bg-hojaOscuro border-hoja text-white">
+                  {isAbonoSubmitting ? 'Procesando...' : 'Confirmar Pago'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

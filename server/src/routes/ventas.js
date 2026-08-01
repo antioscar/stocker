@@ -57,6 +57,19 @@ const create = async (req, res) => {
           metodoPago,
         },
       });
+
+      // Si el método de pago es fiado, actualizar la deuda del cliente
+      if (metodoPago === 'fiado') {
+        if (!clienteId) {
+          throw new Error('Debe seleccionar un cliente para realizar una venta al fiado');
+        }
+        await tx.cliente.update({
+          where: { id: clienteId },
+          data: {
+            saldoDeuda: { increment: total },
+          },
+        });
+      }
       
       // Descontar stock y crear detalles
       for (const item of items) {

@@ -34,6 +34,7 @@ export interface Cliente {
   telefono?: string;
   email?: string;
   direccion?: string;
+  saldoDeuda: number;
   createdAt: string;
 }
 

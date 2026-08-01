@@ -110,10 +110,126 @@ const deleteCustomer = async (req, res) => {
   }
 };
 
+const registrarAbono = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { monto } = req.body;
+    const activeUser = req.user.id;
+
+    if (!monto || monto <= 0) {
+      return res.status(400).json({ error: 'El monto del abono debe ser mayor a cero' });
+    }
+
+    const clienteId = parseInt(id);
+
+    const abono = await prisma.$transaction(async (tx) => {
+      const cliente = await tx.cliente.findUnique({
+        where: { id: clienteId },
+      });
+
+      if (!cliente) {
+        throw new Error('Cliente no encontrado');
+      }
+
+      const nuevoAbono = await tx.pagoCredito.create({
+        data: {
+          clienteId,
+          monto,
+          usuarioId: activeUser,
+        },
+      });
+
+      await tx.cliente.update({
+        where: { id: clienteId },
+        data: {
+          saldoDeuda: { decrement: monto },
+        },
+      });
+
+      return nuevoAbono;
+    });
+
+    res.status(201).json(abono);
+  } catch (error) {
+    console.error('Error al registrar abono:', error);
+    if (error.message === 'Cliente no encontrado') {
+      return res.status(404).json({ error: error.message });
+    }
+    res.status(500).json({ error: 'Error al registrar abono' });
+  }
+};
+
+const getHistorialCuenta = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const clienteId = parseInt(id);
+
+    const cliente = await prisma.cliente.findUnique({
+      where: { id: clienteId },
+    });
+
+    if (!cliente) {
+      return res.status(404).json({ error: 'Cliente no encontrado' });
+    }
+
+    const ventasFiadas = await prisma.venta.findMany({
+      where: {
+        clienteId,
+        metodoPago: 'fiado',
+        anulada: false,
+      },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        folio: true,
+        total: true,
+        createdAt: true,
+      },
+    });
+
+    const abonos = await prisma.pagoCredito.findMany({
+      where: { clienteId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        usuario: {
+          select: { nombre: true },
+        },
+      },
+    });
+
+    const historial = [
+      ...ventasFiadas.map(v => ({
+        tipo: 'COMPRA',
+        id: v.id,
+        detalle: `Compra con folio ${v.folio}`,
+        monto: v.total,
+        createdAt: v.createdAt,
+      })),
+      ...abonos.map(a => ({
+        tipo: 'ABONO',
+        id: a.id,
+        detalle: `Abono registrado por ${a.usuario.nombre}`,
+        monto: a.monto,
+        createdAt: a.createdAt,
+      })),
+    ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    res.json({
+      cliente,
+      historial,
+    });
+  } catch (error) {
+    console.error('Error al obtener historial de cuenta:', error);
+    res.status(500).json({ error: 'Error al obtener historial de cuenta' });
+  }
+};
+
 module.exports = {
   list,
   getById,
   create,
   update,
   delete: deleteCustomer,
+  registrarAbono,
+  getHistorialCuenta,
 };
