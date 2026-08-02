@@ -140,3 +140,31 @@
     @apply rounded-t-md;
   }
 }
+
+@media print {
+  @page {
+    size: auto;
+    margin: 5mm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .etiqueta-print-area,
+  .etiqueta-print-area * {
+    visibility: visible;
+  }
+
+  .etiqueta-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 2mm;
+  }
+
+  .etiqueta-label {
+    page-break-inside: avoid;
+  }
+}

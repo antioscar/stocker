@@ -26,6 +26,7 @@ router.get('/productos/:id', require('./productos').getById);
 router.post('/productos', require('./productos').create);
 router.put('/productos/:id', require('./productos').update);
 router.delete('/productos/:id', require('./productos').delete);
+router.post('/productos/:id/generar-codigo', authenticateToken, require('./productos').generarCodigo);
 
 // Category routes
 router.get('/categorias', require('./categorias').list);

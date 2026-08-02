@@ -99,8 +99,8 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
 | 6 | Frontend: punto de venta (POS) | ✅ Completado (POS funcional; pendiente decisión IVA) |
 | 7 | Frontend: módulos de administración (productos, categorías, clientes, usuarios, inventario) | ✅ Completado (Productos, Clientes, Usuarios) |
 | 8 | Frontend: reportes + configuración | ✅ Completado |
-| 9 | Calidad: tests API (Vitest + Supertest), ESLint, validaciones | ⏳ Pendiente (existe `eslint.config.js` en server; sin tests aún) |
-| 10 | Empaquetado on-premise + README (manual instalación) + material portafolio | Pendiente |
+| 9 | Calidad: tests API (Vitest + Supertest), ESLint, validaciones | ✅ Completado (58 tests, 0 fallos) |
+| 10 | Empaquetado on-premise + README (manual instalación) + material portafolio | ✅ Completado (README, ARQUITECTURA.md, GUIA_USUARIO.md) |
 
 ### 6b. Rediseño de identidad visual — Impeccable (reemplaza la antigua "Fase 3 rediseño anterior")
 
@@ -112,6 +112,7 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
 | E | Rediseño de todas las páginas: Layout, Login, Dashboard, POS+Cart+CajaModal+ProductSearch, Productos, Clientes, Usuarios, Reportes, Configuración | ✅ Completado |
 | F | Calidad: detector Impeccable 0 findings, `tsc --noEmit`, eslint 0 errores, build OK | ✅ Completado |
 | G | `DESIGN.md` final (documento de sistema de diseño) | ✅ Completado |
+| H | `ROADMAP.md` + `ANALISIS_MERCADO_2026.md` (documentación estratégica) | ✅ Completado |
 
 ## 7. Roadmap futuro (NO implementar aún)
 
@@ -196,7 +197,50 @@ Auth: JWT en `Authorization: Bearer <token>`. Middleware de rol: `requireAuth` y
 - **Open Design instalado:** `git clone https://github.com/nexu-io/open-design.git` en `open-design/` + `pnpm install` OK (pnpm 11.18.0 global vía `npm i -g pnpm`; Corepack falló por EPERM). Dev server levantado: **Web http://127.0.0.1:17573/** y **Daemon http://127.0.0.1:17456/** (`pnpm tools-dev run web`). Pendiente explorar cómo mezclarlo con Impeccable.
 - **Pendiente:** revisión visual del usuario en `http://localhost:5173` (Ctrl+Shift+R) para aprobar o ajustar el tema v3; actualizar estos archivos al cierre.
 
-### 01/08/2026 — Rediseño Blanco Minimalista y Profesional (Sesión Actual)
+### 01/08/2026 — Fase D completada (Etiquetas/Barra) (Sesión Actual)
+- **Backend — Generador EAN-13:** Creado `server/src/utils/barcode.js` con función `generarCodigoInterno(id)`. Calcula código EAN-13 con prefijo GS1 `20` (uso interno) + ID de producto rellenado a 10 dígitos + dígito verificador EAN-13. Ej: ID 42 → `2000000000042` + check digit.
+- **Endpoint nuevo:** `POST /api/productos/:id/generar-codigo` (requiere auth). Solo genera si el producto no tiene código previo; asigna `codigoBarras` y retorna el producto actualizado. Ruta registrada en `server/src/routes/index.js`.
+- **Frontend — jsbarcode:** Instalado `jsbarcode` + `@types/jsbarcode` en `web/`. Biblioteca ligera que genera SVG en el navegador, funciona offline.
+- **Productos.tsx modificado:** Checkbox por fila para selección masiva, checkbox header para seleccionar/deseleccionar todos. Botón "Generar código" en cada producto sin `codigoBarras`. Botón "Imprimir etiquetas (N)" visible al seleccionar productos.
+- **EtiquetaModal.tsx creado:** Modal con vista previa de etiquetas. Selector de tamaño (pequeña 40×30mm / mediana 60×40mm). Cantidad editable por producto. Generación de código de barras SVG con JsBarcode (EAN-13). Botón Imprimir → `window.print()`. Labels incluyen: nombre producto, código de barras SVG, precio formateado CLP.
+- **CSS de impresión:** `@media print` agregado al final de `index.css`. Oculta toda la UI excepto `.etiqueta-print-area` y `.etiqueta-label`. Configura `@page` con margen 5mm y evita page-break dentro de etiquetas.
+- **Calidad:** `tsc --noEmit` limpio en web/, `npm run build` OK (CSS 34.67 kB, JS 327.20 kB). Server: instalado `@types/cors` (faltaba previamente), `npm run build` OK.
+- **Pendiente:** Próximo hito: roadmap futuro (escaneo omnipotente, impresión térmica ESC/POS, SII/boleta electrónica, multi-tenant).
+
+### 01/08/2026 — Fase 9 (Tests) y Fase 10 (Documentación) completadas (Sesión Actual)
+- **Fase 9 — Tests API (Vitest + Supertest):**
+  - Instalado `vitest`, `supertest`, `@types/supertest` en `server/`.
+  - Creado `server/vitest.config.mjs` (forks, singleFork, sin paralelismo para evitar conflictos SQLite).
+  - Creado `server/tests/setup.js`: prepara BD SQLite temporal, ejecuta `prisma db push`, seed con datos de prueba (usuarios ADMIN/CAJERO, productos, clientes, proveedor, configuración), limpia entre suites.
+  - Creados 7 archivos de test:
+    - `auth.test.js` (7 tests: login exitoso/fallido, /auth/me, token inválido, roles)
+    - `productos.test.js` (9 tests: CRUD, búsqueda, generar-codigo EAN-13, validaciones)
+    - `ventas.test.js` (8 tests: crear venta, descuento stock, stock insuficiente, descuento %, anular con devolución, fiado incrementa deuda)
+    - `clientes.test.js` (8 tests: CRUD, abonos, historial de cuenta)
+    - `caja.test.js` (9 tests: apertura, cierre con arqueo, movimientos INGRESO/EGRESO, validaciones)
+    - `compras.test.js` (10 tests: compra transaccional, actualización stock/costo/venta, list, filtros; proveedores CRUD)
+    - `reportes.test.js` (7 tests: resumen KPIs, productos más vendidos, stock bajo, configuración get/update)
+  - **Resultado: 58 tests, 7 suites, 0 fallos.**
+  - Modificado `server/src/index.ts`: no hace `app.listen()` cuando se importa en tests (EADDRINUSE).
+- **Fase 10 — Documentación completa:**
+  - `README.md` reescrito profesionalmente: descripción, propuesta de valor, funcionalidades, arquitectura, instalación paso a paso (Windows/Linux/Mac), estructura del proyecto, comandos, pantallas, atajos de teclado, roadmap, licencia.
+  - `docs/ARQUITECTURA.md` creado: diagrama de componentes, modelo ER, flujo de venta transaccional (paso a paso), decisiones técnicas (SQLite, Prisma, JWT, Tailwind, folio), API REST completa (37 endpoints), seguridad, estrategia de tests.
+  - `docs/GUIA_USUARIO.md` creado: primeros pasos, manual para cajeros (abrir/cerrar caja, vender, fiado, pesables, atajos F1-F12, movimientos de caja), manual para administradores (dashboard, productos, clientes, proveedores, compras, reportes, usuarios, configuración, anular ventas, backup), preguntas frecuentes (8 FAQs).
+- **Próximo hito:** roadmap futuro — Fase 1 Corto Plazo (escaneo omnipotente, arqueo de caja, ticket térmico ESC/POS, reporte de utilidad bruta) o Fase 2 (SII/boleta electrónica).
+
+### 01/08/2026 — Roadmap y Análisis de Mercado 2026 (Sesión Actual)
+- **Investigación de mercado actualizada:** Analizados los principales competidores de POS en Chile: Bsale (12K empresas, SaaS, boleta SII), Loyverse (1M+ negocios, freemium, offline), GranLoop (IA para compras, SII automático, nuevo 2026) y DUOPOS (500+ negocios, IA asistida, integración pagos).
+- **`docs/ROADMAP.md` creado:** Roadmap detallado con 4 fases trimestrales:
+  - **Q3 2026 (Corto plazo - alta prioridad):** Dashboard con gráficos Recharts, análisis de márgenes por producto, alertas inteligentes de inventario.
+  - **Q4 2026 (Mediano plazo):** IA para propuestas de compra (qué comprar, cuánto), escaneo de código de barras omnipotente, modo offline básico (PWA), integración SumUp/Transbank.
+  - **H1 2027 (Mediano-largo):** App móvil React Native para dueños (reportes), conexión SII automática (importar facturas de proveedores), boleta electrónica SII.
+  - **H2 2027+ (Largo plazo):** Impresión ticket térmico ESC/POS, migración SaaS multi-tenant PostgreSQL, fidelización de clientes, ecommerce integrado.
+  - Cada hito incluye: prioridad (alta/media/baja), esfuerzo estimado, dependencias y criterios de éxito.
+- **`docs/ANALISIS_MERCADO_2026.md` creado:** Comparativa completa de 5 competidores (Bsale, Loyverse, GranLoop, DUOPOS, Super Cajero), tendencias del mercado chileno (IA, SII automático, offline, app móvil, medios de pago), gaps funcionales de StockCaja priorizados, posicionamiento diferencial (licencia única + on-premise + visibilidad para el dueño), estrategia recomendada.
+- **README.md actualizado:** Sección Roadmap futuro actualizada con resumen trimestral y enlace a ROADMAP.md.
+- **Decisión del usuario:** App móvil movida a mediano-largo plazo (H1 2027), no a largo plazo.
+
+
 - **Rediseño Estético:** Se modificó la hoja de estilos global (`index.css`) para deshacerse de las pestañas retro físicas (clip-path ear shapes) y reemplazarlas por bordes superiores minimalistas y sutiles de acento de color.
 - **Formularios y Botones:** Ajustados los botones, inputs, y tablas a una estética limpia, flat, moderna y profesional.
 - **Estructura del Layout:** Modificado `Layout.tsx` para cambiar la barra superior de `bg-grafito` (oscuro) a un fondo blanco minimalista (`bg-white`) con tipografía oscura, y la navegación a una barra con líneas inferiores activas (underline menu).

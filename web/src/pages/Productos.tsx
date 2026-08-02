@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../services/api';
 import type { Producto, Categoria } from '../types';
+import { EtiquetaModal } from '../components/EtiquetaModal';
 
 interface ProductoForm {
   nombre: string;
@@ -36,6 +37,8 @@ export const Productos = () => {
   const [search, setSearch] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [etiquetaModalOpen, setEtiquetaModalOpen] = useState(false);
 
   const fetchProductos = useCallback(async () => {
     setIsLoading(true);
@@ -141,6 +144,41 @@ export const Productos = () => {
     }
   };
 
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) => {
+      if (prev.size === productos.length) {
+        return new Set();
+      }
+      return new Set(productos.map((p) => p.id));
+    });
+  };
+
+  const handleGenerarCodigo = async (id: number) => {
+    setError('');
+    setSuccess('');
+    try {
+      await apiFetch(`/productos/${id}/generar-codigo`, { method: 'POST' });
+      setSuccess('Código de barras generado correctamente');
+      fetchProductos();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error al generar código');
+    }
+  };
+
+  const selectedProducts = productos.filter((p) => selectedIds.has(p.id));
+
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('es-CL', {
       style: 'currency',
@@ -161,9 +199,16 @@ export const Productos = () => {
               Control de inventario y costos del negocio
             </p>
           </div>
-          <button onClick={openCreate} className="btn btn-primario">
-            + Nuevo producto
-          </button>
+          <div className="flex items-center gap-3 flex-wrap">
+            <button onClick={openCreate} className="btn btn-primario">
+              + Nuevo producto
+            </button>
+            {selectedIds.size > 0 && (
+              <button onClick={() => setEtiquetaModalOpen(true)} className="btn btn-hoja">
+                Imprimir etiquetas ({selectedIds.size})
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="mt-4">
@@ -202,6 +247,14 @@ export const Productos = () => {
             <table className="tabla min-w-full">
               <thead>
                 <tr>
+                  <th className="w-10">
+                    <input
+                      type="checkbox"
+                      checked={productos.length > 0 && selectedIds.size === productos.length}
+                      onChange={toggleSelectAll}
+                      className="rounded border-slate-300 text-hoja focus:ring-hoja h-4 w-4 cursor-pointer"
+                    />
+                  </th>
                   <th>Producto</th>
                   <th>Categoría</th>
                   <th className="text-right">Precio venta</th>
@@ -214,6 +267,14 @@ export const Productos = () => {
               <tbody>
                 {productos.map((producto) => (
                   <tr key={producto.id}>
+                    <td className="px-2 py-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(producto.id)}
+                        onChange={() => toggleSelect(producto.id)}
+                        className="rounded border-slate-300 text-hoja focus:ring-hoja h-4 w-4 cursor-pointer"
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
                         <p className="font-medium text-tinta">{producto.nombre}</p>
@@ -223,10 +284,17 @@ export const Productos = () => {
                           </span>
                         )}
                       </div>
-                      {producto.codigoBarras && (
+                      {producto.codigoBarras ? (
                         <p className="mt-0.5 font-ledger text-xs text-tintaTenue">
                           Cód: {producto.codigoBarras}
                         </p>
+                      ) : (
+                        <button
+                          onClick={() => handleGenerarCodigo(producto.id)}
+                          className="mt-0.5 font-ledger text-[10px] font-bold uppercase tracking-wider text-hoja hover:underline"
+                        >
+                          Generar código
+                        </button>
                       )}
                     </td>
                     <td className="px-4 py-3 text-tintaSuave">
@@ -415,6 +483,16 @@ export const Productos = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {etiquetaModalOpen && (
+        <EtiquetaModal
+          productos={selectedProducts}
+          onClose={() => {
+            setEtiquetaModalOpen(false);
+            setSelectedIds(new Set());
+          }}
+        />
       )}
     </div>
   );

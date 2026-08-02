@@ -1,5 +1,6 @@
 // Productos handlers
 const prisma = require('../utils/db');
+const { generarCodigoInterno } = require('../utils/barcode');
 
 // List products with pagination and search
 const list = async (req, res) => {
@@ -160,10 +161,50 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const generarCodigo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const productoId = parseInt(id);
+
+    const existing = await prisma.producto.findUnique({
+      where: { id: productoId },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    if (existing.codigoBarras) {
+      return res.status(400).json({ error: 'El producto ya tiene un código de barras asignado' });
+    }
+
+    const codigoBarras = generarCodigoInterno(productoId);
+
+    const duplicate = await prisma.producto.findFirst({
+      where: { codigoBarras },
+    });
+
+    if (duplicate) {
+      return res.status(409).json({ error: 'Conflicto: código generado ya existe' });
+    }
+
+    const producto = await prisma.producto.update({
+      where: { id: productoId },
+      data: { codigoBarras },
+      include: { categoria: true },
+    });
+
+    res.json(producto);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al generar código de barras' });
+  }
+};
+
 module.exports = {
   list,
   getById,
   create,
   update,
   delete: deleteProduct,
+  generarCodigo,
 };
